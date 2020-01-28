@@ -1,0 +1,127 @@
+{
+  "project_info": {
+    "project_number": "199913310311",
+    "firebase_url": "https://testproject-d2807.firebaseio.com",
+    "project_id": "testproject-d2807",
+    "storage_bucket": "testproject-d2807.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:199913310311:android:d604da2b703e8e72",
+        "android_client_info": {
+          "package_name": "phannguyen.com.gpsuseractivitytracking"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "199913310311-4kjbcniuh6h5rb9jfjnbtatjm5u976s7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC1MuuHjqPDa-ApzcB_4O5_QQc3MhqkoKA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "199913310311-4kjbcniuh6h5rb9jfjnbtatjm5u976s7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:199913310311:android:87510e8bf7c77937",
+        "android_client_info": {
+          "package_name": "phannguyen.com.testregister"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "199913310311-4kjbcniuh6h5rb9jfjnbtatjm5u976s7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC1MuuHjqPDa-ApzcB_4O5_QQc3MhqkoKA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "199913310311-4kjbcniuh6h5rb9jfjnbtatjm5u976s7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:199913310311:android:b202df210feb0b1f346cc2",
+        "android_client_info": {
+          "package_name": "phannguyen.sample.gpsgeofencingtrackingexperiment"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "199913310311-4kjbcniuh6h5rb9jfjnbtatjm5u976s7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC1MuuHjqPDa-ApzcB_4O5_QQc3MhqkoKA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "199913310311-4kjbcniuh6h5rb9jfjnbtatjm5u976s7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:199913310311:android:f8528fc8b259eeb4346cc2",
+        "android_client_info": {
+          "package_name": "phannguyen.sample.serviceexperimental"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "199913310311-4kjbcniuh6h5rb9jfjnbtatjm5u976s7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC1MuuHjqPDa-ApzcB_4O5_QQc3MhqkoKA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "199913310311-4kjbcniuh6h5rb9jfjnbtatjm5u976s7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
