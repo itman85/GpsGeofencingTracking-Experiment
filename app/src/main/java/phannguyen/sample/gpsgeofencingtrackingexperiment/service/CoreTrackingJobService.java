@@ -29,9 +29,11 @@ import phannguyen.sample.gpsgeofencingtrackingexperiment.utils.SbLog;
 import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.BUNDLE_EXTRA_LOCATION_RESULT;
 import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.BUNDLE_EXTRA_LOCATION_SOURCE;
 import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.DETECT_LOCATION_ACCURACY;
+import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.ERROR_TAG;
 import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.INTERVAL_CHECK_STILL_IN_MS;
 import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.INTERVAL_SLOW_MOVE_IN_MS;
 import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.INTERVAL_VERY_SLOW_MOVE_IN_MS;
+import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.LOCATION_RESULT_TAG;
 import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.STAY_DISTANCE_IN_MET;
 import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.STILL_CONFIDENCE;
 import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.TIMEOUT_STAY_LOCATION;
@@ -52,19 +54,21 @@ public class CoreTrackingJobService extends JobIntentService {
     @Override
     protected void onHandleWork(@NonNull Intent intent) {
         SbLog.i(TAG,"CoreTrackingLocation job service on handle");
-        FileLogs.appendLog(this,TAG,"I","Remote-CoreTrackingLocation job service on handle");
+        FileLogs.writeLog(this,TAG,"I","CoreTrackingLocation job service on handle");
+        FileLogs.writeLogByDate(this,TAG,"I","CoreTrackingLocation job service on handle");
         boolean res = handleLocationIntent(intent);
         if (!res) {
-            FileLogs.appendLog(this,TAG,"I","Remote-CoreTrackingLocation get fused location now");
+            FileLogs.writeLog(this,TAG,"I","CoreTrackingLocation get fused location now");
+            FileLogs.writeLogByDate(this,TAG,"I","CoreTrackingLocation get fused location now");
             FusedLocationProviderClient mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
             mFusedLocationClient.getLastLocation().addOnSuccessListener(location -> {
                 if (location != null) {
                     //only accept location with accuracy less than DETECT_LOCATION_ACCURACY
                     if(location.getAccuracy() < DETECT_LOCATION_ACCURACY) {
-                        FileLogs.appendLog(this,"LocationProcess","I","From Get Fused Last Location Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());
+                        FileLogs.writeLog(this,LOCATION_RESULT_TAG,"I","From Get Fused Last Location Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());
                         processLocationData(location);
                     } else {
-                        FileLogs.appendLog(this,TAG, "I", "Remote - **** Location From Fused accuracy larger than " + DETECT_LOCATION_ACCURACY + " Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());
+                        FileLogs.writeLog(this,LOCATION_RESULT_TAG, "I", "Location From Fused last location accuracy larger than " + DETECT_LOCATION_ACCURACY + " Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());
                         startAlarmLocationTrigger(INTERVAL_SLOW_MOVE_IN_MS);
                     }
                 } else {
@@ -72,8 +76,8 @@ public class CoreTrackingJobService extends JobIntentService {
                 }
             }).addOnFailureListener(e -> {
                 if (e != null) {
-                    Log.e(TAG, e.getMessage());
-                    FileLogs.appendLog(this,TAG, "I", "Remote - service Error " + e.getMessage());
+                    SbLog.e(TAG, e.getMessage());
+                    FileLogs.writeLog(this,ERROR_TAG, "I", "service Error " + e.getMessage());
                 }
                 startAlarmLocationTrigger(INTERVAL_SLOW_MOVE_IN_MS);
             });
@@ -83,26 +87,27 @@ public class CoreTrackingJobService extends JobIntentService {
                 if (LocationRequestUpdateService.locationManager != null) {
                     String locationProvider = LocationRequestUpdateService.locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ? LocationManager.GPS_PROVIDER :
                             LocationManager.NETWORK_PROVIDER;
-                    FileLogs.appendLog(this,TAG, "I", "Remote-CoreTrackingLocation get provider location now");
+                    FileLogs.writeLog(this,TAG, "I", "CoreTrackingLocation get provider "+locationProvider+" location now");
+                    FileLogs.writeLogByDate(this,TAG, "I", "CoreTrackingLocation get provider "+locationProvider+" location now");
                     @SuppressLint("MissingPermission")
                     Location location = LocationRequestUpdateService.locationManager.getLastKnownLocation(locationProvider);
                     if (location != null) {
                         //only accept location with accuracy less than DETECT_LOCATION_ACCURACY
                         if (location.getAccuracy() < DETECT_LOCATION_ACCURACY) {
-                            FileLogs.appendLog(this,"LocationProcess", "I", "From " + locationProvider + " Provider Get Last Location Lat = " + location.getLatitude() + " - Lng= " + location.getLongitude());
+                            FileLogs.writeLog(this,LOCATION_RESULT_TAG, "I", "From " + locationProvider + " Provider Get Last Location Lat = " + location.getLatitude() + " - Lng= " + location.getLongitude());
                             processLocationData(location);
                         } else {
-                            FileLogs.appendLog(this,TAG, "I", "Remote - **** From " + locationProvider + " Provider Location accuracy larger than " + DETECT_LOCATION_ACCURACY + " Lat = " + location.getLatitude() + " - Lng= " + location.getLongitude());
+                            FileLogs.writeLog(this,LOCATION_RESULT_TAG, "I", "From " + locationProvider + " Provider Get Last Location accuracy larger than " + DETECT_LOCATION_ACCURACY + " Lat = " + location.getLatitude() + " - Lng= " + location.getLongitude());
                             startAlarmLocationTrigger(INTERVAL_SLOW_MOVE_IN_MS);
                         }
                     } else {
                         startAlarmLocationTrigger(INTERVAL_SLOW_MOVE_IN_MS);
                     }
                 } else {
-                    FileLogs.appendLog(this,TAG, "I", "Remote-CoreTrackingLocation get provider location Fail");
+                    FileLogs.writeLog(this,TAG, "I", "CoreTrackingLocation get provider location Fail");
                 }
             }catch (Exception ex){
-                FileLogs.appendLog(this,TAG, "I", "Remote-CoreTrackingLocation get provider location Error " + Log.getStackTraceString(ex));
+                FileLogs.writeLog(this,ERROR_TAG, "I", "CoreTrackingLocation get provider location Error " + Log.getStackTraceString(ex));
             }
 
         }
@@ -114,7 +119,7 @@ public class CoreTrackingJobService extends JobIntentService {
 
     private static void cancelLocationTriggerAlarm(Context context) {
         Log.i(TAG, "Cancel Location Trigger Interval Worker");
-        FileLogs.appendLog(context,TAG,"I","Cancel Location Trigger worker");
+        FileLogs.writeLog(context,TAG,"I","Cancel Location Trigger worker");
         WorkManagerHelper.cancelLocationTriggerWorkerOnetimeRequest(context);
     }
 
@@ -127,8 +132,8 @@ public class CoreTrackingJobService extends JobIntentService {
         if(intent.hasExtra(BUNDLE_EXTRA_LOCATION_RESULT)) {
             Location location = intent.getParcelableExtra(BUNDLE_EXTRA_LOCATION_RESULT);
             if (location != null) {
-                FileLogs.appendLog(this,TAG,"I","Remote-CoreTrackingLocation receive location intent and process now");
-                FileLogs.appendLog(this,"LocationProcess","I","From "+ intent.getStringExtra(BUNDLE_EXTRA_LOCATION_SOURCE)+" Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());
+                FileLogs.writeLog(this,TAG,"I","CoreTrackingLocation receive location intent and process now");
+                FileLogs.writeLog(this,LOCATION_RESULT_TAG,"I","*CoreTrackingLocation receive location intent From "+ intent.getStringExtra(BUNDLE_EXTRA_LOCATION_SOURCE)+" Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());
                 processLocationData(location);
                 return true;
             }
@@ -140,9 +145,10 @@ public class CoreTrackingJobService extends JobIntentService {
         boolean isMove = checkUserLocationData(location);
         if(isMove){
             SbLog.i(TAG,"***User moving Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());
-            FileLogs.appendLog(this,TAG,"I","Remote-***User moving Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());
+            FileLogs.writeLog(this,TAG,"I","***User moving Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());
             //store location info local db
-            FileLogs.appendLog(this,"LocationProcess","I","Save Location At Moving Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());
+            FileLogs.writeLog(this,LOCATION_RESULT_TAG,"I","Save Location At Moving Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());
+            FileLogs.writeLogByDate(this,LOCATION_RESULT_TAG,"I","Save Location At Moving Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());
             //store location
             //UtilsFn.saveLocation(location,this);
             //check if location request update still alive, then start alarm
@@ -152,11 +158,13 @@ public class CoreTrackingJobService extends JobIntentService {
             //check if user don't move for long time => user STILL
             if(System.currentTimeMillis() - lastStayMoment >= TIMEOUT_STAY_LOCATION){
                 SbLog.i(TAG,"***User Stay for long time Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());
-                FileLogs.appendLog(this,TAG,"I","Remote-***User stay for certain time Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());
+                FileLogs.writeLog(this,TAG,"I","***User stay for certain time Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());
+                FileLogs.writeLogByDate(this,TAG,"I","***User stay for certain time Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());
                 getSnapshotCurrentActivity(this,location);
             }else{
                 Log.i(TAG,"***User Stay a bit Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());
-                FileLogs.appendLog(this,TAG,"I","Remote-***User stay a bit Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());
+                FileLogs.writeLog(this,TAG,"I","***User stay a bit Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());
+                FileLogs.writeLogByDate(this,TAG,"I","***User stay a bit Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());
                 //check if location request update still alive, then start alarm
                 startAlarmLocationTrigger(INTERVAL_VERY_SLOW_MOVE_IN_MS);
             }
@@ -216,12 +224,13 @@ public class CoreTrackingJobService extends JobIntentService {
                     String activityStr = probableActivity.toString();
                     Log.i(TAG,"Activity: " + activityStr
                             + ", Confidence: " + confidence + "/100");
-                    FileLogs.appendLog(context,TAG,"I","Remote-Get Snapshot Activity: " + activityStr
+                    FileLogs.writeLog(context,TAG,"I","Get Snapshot Activity: " + activityStr
                             + ", Confidence: " + confidence + "/100");
                     //check if STILL now, so cancel tracking
                     if(probableActivity.getType() == DetectedActivity.STILL && confidence >= STILL_CONFIDENCE){
                         //user still, so cancel tracking location alarm
-                        FileLogs.appendLog(context,TAG,"I","Remote-User STILL now, Cancel location trigger interval worker");
+                        FileLogs.writeLog(context,TAG,"I","User STILL now, Cancel location trigger interval worker, Stop Request Update Location");
+                        FileLogs.writeLogByDate(context,TAG,"I","User STILL now, Cancel location trigger interval worker, Stop Request Update Location");
                         //stop interval check location work
                         cancelLocationTriggerAlarm(context);
                         //stop request update location service
@@ -233,11 +242,13 @@ public class CoreTrackingJobService extends JobIntentService {
                         //
                         updateLastLocation((float) location.getLatitude(),(float) location.getLongitude(),System.currentTimeMillis());
                         //store location info local db
-                        FileLogs.appendLog(context,"LocationProcess","I","Save Location At Still Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());
+                        FileLogs.writeLog(context,LOCATION_RESULT_TAG,"I","Save Location At Still Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());
+                        FileLogs.writeLogByDate(context,LOCATION_RESULT_TAG,"I","Save Location At Still Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());
                         //save location
                         //UtilsFn.saveLocation(location,mContext);
                     }else{
-                        FileLogs.appendLog(context,TAG,"I","Remote-User NOT STILL now, keep tracking location by interval worker trigger");
+                        FileLogs.writeLog(context,TAG,"I","User NOT STILL now, keep tracking location by interval worker trigger");
+                        FileLogs.writeLogByDate(context,TAG,"I","User NOT STILL now, keep tracking location by interval worker trigger");
                         //seem user not move, so track again after quite long time
                         startAlarmLocationTrigger(INTERVAL_CHECK_STILL_IN_MS);
                     }
@@ -245,7 +256,7 @@ public class CoreTrackingJobService extends JobIntentService {
 
                 .addOnFailureListener(e -> {
                     SbLog.e(TAG, "Could not detect activity: " + e);
-                    FileLogs.appendLog(context,TAG,"E","Remote-Get Snapshot could not detect activity: " + e);
+                    FileLogs.writeLog(context,ERROR_TAG,"E","Get Snapshot could not detect activity: " + e.getMessage());
                 });
     }
 }

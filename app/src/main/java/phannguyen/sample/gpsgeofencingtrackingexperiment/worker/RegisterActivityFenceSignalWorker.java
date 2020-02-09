@@ -1,7 +1,6 @@
 package phannguyen.sample.gpsgeofencingtrackingexperiment.worker;
 
 import android.content.Context;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.work.Data;
@@ -33,7 +32,7 @@ public class RegisterActivityFenceSignalWorker extends Worker {
     @NonNull
     @Override
     public Result doWork() {
-        Log.i(TAG,"Work time "+ count + " at " +System.currentTimeMillis());
+        SbLog.i(TAG,"Work time "+ count + " at " +System.currentTimeMillis());
         setupFences();
         Data output = new Data.Builder()
                 .putInt(KEY_RESULT, count)
@@ -75,18 +74,20 @@ public class RegisterActivityFenceSignalWorker extends Worker {
         // Now that we have an interesting, complex condition, register the fence to receive
         // callbacks.
         SbLog.i(TAG, "Activity Fence now registered again.");
-        FileLogs.appendLog(this.getApplicationContext(),TAG,"I","Activity Fence now registered again.");
+        FileLogs.writeLog(this.getApplicationContext(),TAG,"I","Activity Fence Register Now.");
+        FileLogs.writeLogByDate(this.getApplicationContext(),TAG,"I","Activity Fence Register Now.");
         // Register the fence to receive callbacks.
         Awareness.getFenceClient(this.getApplicationContext()).updateFences(new FenceUpdateRequest.Builder()
                 .addFence(ACTIVITY_FENCE_KEY, stayFence, PendingIntentHelper.getFenceAwareNessPendingIntent(getApplicationContext()))
                 .build())
                 .addOnSuccessListener(aVoid -> {
                     SbLog.i(TAG, "Activity Fence was successfully registered again.");
-                    FileLogs.appendLog(this.getApplicationContext(),TAG,"I","Activity Fence was successfully registered again.");
+                    FileLogs.writeLog(this.getApplicationContext(),TAG,"I","Activity Fence was successfully registered again.");
+                    FileLogs.writeLogByDate(this.getApplicationContext(),TAG,"I","Activity Fence was successfully registered again.");
                 })
                 .addOnFailureListener(e -> {
                     SbLog.e(TAG, "Activity Fence could not be registered again: " + e);
-                    FileLogs.appendLog(this.getApplicationContext(),TAG,"E","Activity Fence could not be registered again: " + e);
+                    FileLogs.writeLog(this.getApplicationContext(),TAG,"E","Activity Fence could not be registered again: " + e);
                 });
     }
 }

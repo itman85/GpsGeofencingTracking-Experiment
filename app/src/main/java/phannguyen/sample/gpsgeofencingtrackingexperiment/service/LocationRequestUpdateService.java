@@ -59,7 +59,8 @@ public class LocationRequestUpdateService extends Service implements LocationLis
     @Override
     public void onCreate() {
         super.onCreate();
-        FileLogs.appendLog(this,TAG,"I","Remote - Location Request Update Service initService");
+        FileLogs.writeLog(this,TAG,"I","Location Request Update Service initService");
+        FileLogs.writeLogByDate(this,TAG,"I","Location Request Update Service initService");
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
         mLocationRequest = new LocationRequest();
@@ -86,17 +87,18 @@ public class LocationRequestUpdateService extends Service implements LocationLis
     @SuppressLint("MissingPermission")
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        FileLogs.appendLog(this,TAG,"I","Remote - Service handleStartCommand");
+        FileLogs.writeLog(this,TAG,"I","*** Location Request Update Service handleStartCommand");
+        FileLogs.writeLogByDate(this,TAG,"I","*** Location Request Update Service handleStartCommand");
         boolean isOnTracking = false;
         //for case this service is killed by OS, it will restart with null intent, then request location update again
         if(intent==null){
             isOnTracking = SharedPreferencesHandler.getLocationRequestUpdateStatus(this);
             if(isOnTracking){
                 isStartTracking  = false;//restart request update location incase this service killed by OS
-                FileLogs.appendLog(this,TAG,"I","Service restart Null Intent, restart update location");
+                FileLogs.writeLog(this,TAG,"I","Service restart Null Intent,Still on tracking so restart update location");
             }else{
                 //no location request update live now, so kill this service
-                FileLogs.appendLog(this,TAG,"I","Service restart Null Intent, Stop now");
+                FileLogs.writeLog(this,TAG,"I","Service restart Null Intent,Not on tracking so Stop now");
                 stopSelf();//https://stackoverflow.com/questions/8279199/can-i-call-stopself-in-service-onstartcommand
             }
         }
@@ -105,11 +107,12 @@ public class LocationRequestUpdateService extends Service implements LocationLis
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                     && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 //Log.e(TAG, "No location permission granted");
-                FileLogs.appendLog(this,TAG,"E","Remote - No location permission granted");
+                FileLogs.writeLog(this,TAG,"E","No location permission granted");
             } else {
                 //Log.i(TAG, "Request location update");
                 if(!isStartTracking) {
-                    FileLogs.appendLog(this,TAG,"I","Remote - Request location update now");
+                    FileLogs.writeLog(this,TAG,"I","Start Request location update now");
+                    FileLogs.writeLogByDate(this,TAG,"I","Start Request location update now");
                     mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
                     locationManager.requestLocationUpdates(locationProvider,INTERVAL_SLOW_MOVE_IN_MS,STAY_DISTANCE_IN_MET,this);
                     isStartTracking = true;
@@ -118,7 +121,8 @@ public class LocationRequestUpdateService extends Service implements LocationLis
             }
         }else if(intent!=null && intent.hasExtra("action") && "STOP".equals(intent.getStringExtra("action"))){
             //Log.e(TAG, "*** Remove Request location update");
-            FileLogs.appendLog(this,TAG,"I","Remote - *** Remove Request location update");
+            FileLogs.writeLog(this,TAG,"I","*** Remove Request location update,STOP update location now");
+            FileLogs.writeLogByDate(this,TAG,"I","*** Remove Request location update,STOP update location now");
             removeLocationRequestUpdate();
             isStartTracking = false;
             stopSelf();
@@ -129,7 +133,8 @@ public class LocationRequestUpdateService extends Service implements LocationLis
     @Override
     public void onDestroy() {
         super.onDestroy();
-        FileLogs.appendLog(this,TAG,"I","Remote - **** Location Request Update Service Destroy");
+        FileLogs.writeLog(this,TAG,"I","*** Location Request Update Service Destroy");
+        FileLogs.writeLogByDate(this,TAG,"I","*** Location Request Update Service Destroy");
         SharedPreferencesHandler.setLocationRequestUpdateStatus(this, false);
         //mServiceHandler.removeCallbacksAndMessages(null);
         locationManager = null;
@@ -151,9 +156,11 @@ public class LocationRequestUpdateService extends Service implements LocationLis
             ServiceHelper.startCoreLocationTrackingJobService(this,bundle);
             // use the Location
             //Log.i(TAG,"***Last location is Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());
-            FileLogs.appendLog(this,TAG,"I","Remote - ***Last Fused location is Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());
+            FileLogs.writeLog(this,TAG,"I","Last Fused location is Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());
+            FileLogs.writeLogByDate(this,TAG,"I","Last Fused location is Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());
         }else{
-            FileLogs.appendLog(this,TAG,"I","Remote - **** Fused Location accuracy larger than "+DETECT_LOCATION_ACCURACY + " Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());
+            FileLogs.writeLog(this,TAG,"I","Fused Location accuracy larger than "+DETECT_LOCATION_ACCURACY + " Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());
+            FileLogs.writeLogByDate(this,TAG,"I","Fused Location accuracy larger than "+DETECT_LOCATION_ACCURACY + " Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());
         }
 
     }
@@ -170,9 +177,11 @@ public class LocationRequestUpdateService extends Service implements LocationLis
             ServiceHelper.startCoreLocationTrackingJobService(this,bundle);
             // use the Location
             //Log.i(TAG,"***Last location is Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());
-            FileLogs.appendLog(this,TAG,"I","Remote - ***Last "+ locationProvider +" Provider location is Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());
+            FileLogs.writeLog(this,TAG,"I","Last "+ locationProvider +" Provider location is Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());
+            FileLogs.writeLogByDate(this,TAG,"I","Last "+ locationProvider +" Provider location is Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());
         }else{
-            FileLogs.appendLog(this,TAG,"I","Remote - **** " + locationProvider + " Provider Location accuracy larger than "+ DETECT_LOCATION_ACCURACY + " Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());
+            FileLogs.writeLog(this,TAG,"I",locationProvider + " Provider Location accuracy larger than "+ DETECT_LOCATION_ACCURACY + " Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());
+            FileLogs.writeLogByDate(this,TAG,"I",locationProvider + " Provider Location accuracy larger than "+ DETECT_LOCATION_ACCURACY + " Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());
         }
     }
 

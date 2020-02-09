@@ -5,7 +5,7 @@ android {
     buildToolsVersion "29.0.1"
     defaultConfig {
         applicationId "phannguyen.sample.gpsgeofencingtrackingexperiment"
-        minSdkVersion 15
+        minSdkVersion 16
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
@@ -34,5 +34,11 @@ dependencies {
     //work manager
     implementation "androidx.work:work-runtime:2.2.0"
 
-    implementation "com.google.android.gms:play-services-awareness:17.1.0"
+    implementation "com.google.android.gms:play-services-awareness:18.0.0"
+
+    // Add the Firebase SDK for Crashlytics.
+    implementation 'com.google.firebase:firebase-crashlytics:17.0.0-beta01'
 }
+
+apply plugin: 'com.google.gms.google-services'
+apply plugin: 'com.google.firebase.crashlytics'

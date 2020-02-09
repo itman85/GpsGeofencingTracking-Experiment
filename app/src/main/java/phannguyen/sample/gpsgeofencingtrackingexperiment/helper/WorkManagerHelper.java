@@ -6,7 +6,6 @@ import androidx.work.ExistingWorkPolicy;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 
-import java.io.File;
 import java.util.concurrent.TimeUnit;
 
 import phannguyen.sample.gpsgeofencingtrackingexperiment.utils.FileLogs;
@@ -20,7 +19,7 @@ import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.R
 
 public class WorkManagerHelper {
 
-    public static void startOneTimeRegisterUserActivityForTrackingLocationWorker(Context context,int workPolicyVal, int intervalTimeInMin){
+    public static void startOneTimeRegisterUserActivityForTrackingLocationWorker(Context context,int workPolicyVal, int intervalTimeInSecond){
         ExistingWorkPolicy workPolicy = ExistingWorkPolicy.REPLACE;//replace by new request
         switch (workPolicyVal){
             case 0:
@@ -34,14 +33,13 @@ public class WorkManagerHelper {
         }
         OneTimeWorkRequest registerActivityWork=
                 new OneTimeWorkRequest.Builder(RegisterActivityFenceSignalWorker.class)
-                        .setInitialDelay(intervalTimeInMin, TimeUnit.MINUTES)
+                        .setInitialDelay(intervalTimeInSecond, TimeUnit.SECONDS)
                         .addTag(REGISTER_ACTIVTY_WORKER_TAG)// Use this when you want to add initial delay or schedule initial work to `OneTimeWorkRequest` e.g. setInitialDelay(2, TimeUnit.HOURS)
                         .build();
         WorkManager.getInstance(context).enqueueUniqueWork(REGISTER_USER_ACTIVITY_INTERVAL_WORKER_UNIQUE_NAME,workPolicy,registerActivityWork);
     }
 
     public static void startLocationTriggerWorkerOnetimeRequest(Context context,int delayInSecond, int workPolicyVal){
-        FileLogs.appendLog(context,"MainAppProcessCallbackImpl","I","5-App-Invoke method startLocationTriggerWorkerOnetimeRequest");
         ExistingWorkPolicy workPolicy = ExistingWorkPolicy.REPLACE;//replace by new request
         switch (workPolicyVal){
             case 0:
@@ -63,7 +61,7 @@ public class WorkManagerHelper {
     }
 
     public static void cancelLocationTriggerWorkerOnetimeRequest(Context context){
-        FileLogs.appendLog(context,"MainAppProcessCallbackImpl","I","4-App-Invoke method cancelLocationTriggerWorkerOnetimeRequest");
+        FileLogs.writeLog(context,"MainAppProcessCallbackImpl","I","4-App-Invoke method cancelLocationTriggerWorkerOnetimeRequest");
         WorkManager.getInstance(context).cancelUniqueWork(LOCATION_TRACKING_INTERVAL_WORKER_UNIQUE_NAME);
     }
 }

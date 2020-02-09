@@ -12,7 +12,7 @@ import phannguyen.sample.gpsgeofencingtrackingexperiment.helper.ServiceHelper;
 import phannguyen.sample.gpsgeofencingtrackingexperiment.utils.FileLogs;
 
 public class LocationTrackingIntervalWorker extends Worker {
-    private static final String TAG = "5.LocationIntervalWorker";
+    private static final String TAG = "LocationIntervalWorker";
     public static final String KEY_RESULT = "locationResult";
 
     public LocationTrackingIntervalWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
@@ -23,7 +23,8 @@ public class LocationTrackingIntervalWorker extends Worker {
     @Override
     public ListenableWorker.Result doWork() {
         //Log.i(TAG,"Location Tracking Interval Worker Trigger");
-        FileLogs.appendLog(this.getApplicationContext(),TAG,"I","App-Location Tracking Interval Worker Trigger");
+        FileLogs.writeLog(this.getApplicationContext(),TAG,"I","Location Tracking Interval Worker Trigger");
+        FileLogs.writeLogByDate(this.getApplicationContext(),TAG,"I","Location Tracking Interval Worker Trigger");
         ServiceHelper.startCoreLocationTrackingJobService(getApplicationContext(),null);
         Data output = new Data.Builder()
                 .putBoolean(KEY_RESULT, true)

@@ -39,6 +39,8 @@ public class Constant {
 
     public static final String LOCATION_TRACKING_INTERVAL_WORKER_UNIQUE_NAME  = "location_tracking_interval_worker_unique_name";
 
+    public static final String LOCATION_RESULT_TAG = "LocationResult";
+    public static final String ERROR_TAG = "Error";
 
     public enum SIGNAL {
         MOVE("MOVE");
