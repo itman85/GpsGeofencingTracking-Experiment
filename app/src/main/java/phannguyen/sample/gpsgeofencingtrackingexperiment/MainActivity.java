@@ -70,6 +70,11 @@ public class MainActivity extends AppCompatActivity {
             permissionList.add(Manifest.permission.ACCESS_BACKGROUND_LOCATION);
         }
 
+        if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q &&
+                checkSelfPermission(Manifest.permission.ACTIVITY_RECOGNITION) != PackageManager.PERMISSION_GRANTED){
+            permissionList.add(Manifest.permission.ACTIVITY_RECOGNITION);
+        }
+
         if(!permissionList.isEmpty() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
             String[] itemsArray = new String[permissionList.size()];
             itemsArray = permissionList.toArray(itemsArray);

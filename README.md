@@ -31,6 +31,6 @@ Module kích hoạt track activity
 
 Todo List
 1. custome dùng alarm manager cho android 7- workmanager cho android 8+ khi schedule
-2. xem detect activity khong work với android 10, các android 5,6,7,8,9 đều work sau khi move vài ba phút là detect được
+v2. xem detect activity khong work với android 10, các android 5,6,7,8,9 đều work sau khi move vài ba phút là detect được -> android 10 need to ask permission at runtime
 3. xem sao crash report nó ko send to firebase sau khi dùng firebase crashlytic sđk mới beta version
 4. Xem kết quả detect activity trên android 5,7,8 và location tracking background trên android 5,7 có tốt ko. xem log theo ngày.
