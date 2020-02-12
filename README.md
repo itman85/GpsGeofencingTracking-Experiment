@@ -18,9 +18,11 @@ https://developers.google.com/awareness/android-api/get-a-key
 NOTE: Error APIExeception 17 ContextManager API is not available on this device là do awareness api key nó ko connect vào service để verify
 nên kiểm tra lai network.
 
-3. NOTE: Không hiểu sao ActivityRecognitionClient không work khi request update trong background service, nên sẽ dùng awareness api thay thế
+3. NOTE: Không hiểu sao Activity Recognition Transition API ActivityRecognitionClient không work khi request update trong background service, nên sẽ dùng AWARENESS API thay thế
 Xem trong comment của link sau:
 https://blog.mindorks.com/activity-recognition-in-android-still-walking-running-driving-and-much-more
+Codelab Activity Recognition Transition API 
+https://codelabs.developers.google.com/codelabs/activity-recognition-transition/index.html#0
 
 I.Android < 8
 Trigger screen on/off -> Dựa vào event này sẽ đi gọi module kích hoạt track user activity(Move or Idle).
