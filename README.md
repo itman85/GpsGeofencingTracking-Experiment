@@ -7,6 +7,8 @@ https://developer.android.com/training/location/receive-location-updates#inform-
 
 https://stackoverflow.com/questions/40142331/how-to-request-location-permission-at-runtime
 
+[geofencing] https://developer.android.com/training/location/geofencing
+
 Android code search
 
 1. Permission Controller:
