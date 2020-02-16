@@ -46,6 +46,7 @@ public class ActivityFenceSignalReceiver extends BroadcastReceiver {
                     //user still
                     SbLog.i(TAG,"User Still");
                     stopLocationTrackingService(context);
+                    //startLocationTrackingService(context);
                     break;
                 default:
                     stopLocationTrackingService(context);
@@ -56,7 +57,7 @@ public class ActivityFenceSignalReceiver extends BroadcastReceiver {
     }
 
     private void startLocationTrackingService(Context context) {
-        Log.i(TAG, "User MOVE SIGNAL - Start Location Request Update Service");
+        SbLog.i(TAG, "User MOVE SIGNAL - Start Location Request Update Service");
         FileLogs.writeLog(context, TAG, "I", "USER MOVE SIGNAL - Start Location&Geofencing Request Update Service");
         FileLogs.writeLogByDate(context, TAG, "I", "USER MOVE SIGNAL - Start Location&Geofencing Request Update Service");
         Map<String, Object> bundle = new HashMap<>();
@@ -68,8 +69,8 @@ public class ActivityFenceSignalReceiver extends BroadcastReceiver {
         SbLog.i(TAG, "USER NOT MOVE SIGNAL");
         FileLogs.writeLog(context, TAG, "I", "USER NOT MOVE SIGNAL");
         FileLogs.writeLogByDate(context, TAG, "I", "USER NOT MOVE SIGNAL");
-        //let location tracking decide to stop tracking or not
-        //LocationTrackingJobIntentService.cancelLocationTriggerAlarm(context);
+        //let core location tracking decide to stop tracking or not
+
 
     }
 }

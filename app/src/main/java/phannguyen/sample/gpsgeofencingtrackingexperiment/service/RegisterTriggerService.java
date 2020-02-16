@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 
 import phannguyen.sample.gpsgeofencingtrackingexperiment.receiver.ScreenStateReceiver;
 
+// this service only for android 7-
 public class RegisterTriggerService extends Service {
     boolean isRegistered;
     private ScreenStateReceiver mScreenReceiver;

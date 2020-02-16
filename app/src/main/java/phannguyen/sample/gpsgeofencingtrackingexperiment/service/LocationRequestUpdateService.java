@@ -28,6 +28,7 @@ import java.util.Map;
 import phannguyen.sample.gpsgeofencingtrackingexperiment.helper.ServiceHelper;
 import phannguyen.sample.gpsgeofencingtrackingexperiment.storage.SharedPreferencesHandler;
 import phannguyen.sample.gpsgeofencingtrackingexperiment.utils.FileLogs;
+import phannguyen.sample.gpsgeofencingtrackingexperiment.utils.SbLog;
 
 import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.BUNDLE_EXTRA_LOCATION_RESULT;
 import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.BUNDLE_EXTRA_LOCATION_SOURCE;
@@ -59,12 +60,13 @@ public class LocationRequestUpdateService extends Service implements LocationLis
     @Override
     public void onCreate() {
         super.onCreate();
+        SbLog.i(TAG,"Location Request Update Service initService");
         FileLogs.writeLog(this,TAG,"I","Location Request Update Service initService");
         FileLogs.writeLogByDate(this,TAG,"I","Location Request Update Service initService");
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
         mLocationRequest = new LocationRequest();
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
         mLocationRequest.setInterval(UPDATE_INTERVAL);
         mLocationRequest.setFastestInterval(FASTEST_INTERVAL);
         mLocationCallback = new LocationCallback() {
@@ -104,8 +106,7 @@ public class LocationRequestUpdateService extends Service implements LocationLis
         }
 
         if(isOnTracking || (intent!=null && intent.hasExtra("action") && "START".equals(intent.getStringExtra("action")))) {
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                    && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 //Log.e(TAG, "No location permission granted");
                 FileLogs.writeLog(this,TAG,"E","No location permission granted");
             } else {
@@ -158,9 +159,11 @@ public class LocationRequestUpdateService extends Service implements LocationLis
             //Log.i(TAG,"***Last location is Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());
             FileLogs.writeLog(this,TAG,"I","Last Fused location is Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());
             FileLogs.writeLogByDate(this,TAG,"I","Last Fused location is Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());
+            SbLog.i(TAG,"Last Fused location is Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());
         }else{
             FileLogs.writeLog(this,TAG,"I","Fused Location accuracy larger than "+DETECT_LOCATION_ACCURACY + " Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());
             FileLogs.writeLogByDate(this,TAG,"I","Fused Location accuracy larger than "+DETECT_LOCATION_ACCURACY + " Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());
+            SbLog.i(TAG,"Fused Location accuracy larger than "+DETECT_LOCATION_ACCURACY + " Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());
         }
 
     }
@@ -179,9 +182,11 @@ public class LocationRequestUpdateService extends Service implements LocationLis
             //Log.i(TAG,"***Last location is Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());
             FileLogs.writeLog(this,TAG,"I","Last "+ locationProvider +" Provider location is Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());
             FileLogs.writeLogByDate(this,TAG,"I","Last "+ locationProvider +" Provider location is Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());
+            SbLog.i(TAG,"Last "+ locationProvider +" Provider location is Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());
         }else{
             FileLogs.writeLog(this,TAG,"I",locationProvider + " Provider Location accuracy larger than "+ DETECT_LOCATION_ACCURACY + " Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());
             FileLogs.writeLogByDate(this,TAG,"I",locationProvider + " Provider Location accuracy larger than "+ DETECT_LOCATION_ACCURACY + " Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());
+            SbLog.i(TAG,locationProvider + " Provider Location accuracy larger than "+ DETECT_LOCATION_ACCURACY + " Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());
         }
     }
 

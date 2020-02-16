@@ -19,6 +19,7 @@ import java.util.List;
 import phannguyen.sample.gpsgeofencingtrackingexperiment.helper.WorkManagerHelper;
 import phannguyen.sample.gpsgeofencingtrackingexperiment.receiver.ScreenStateReceiver;
 import phannguyen.sample.gpsgeofencingtrackingexperiment.service.RegisterTriggerService;
+import phannguyen.sample.gpsgeofencingtrackingexperiment.utils.TestUtils;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -31,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
         Button startBtn = findViewById(R.id.startBtn);
         startBtn.setOnClickListener(v -> {
             WorkManagerHelper.startOneTimeRegisterUserActivityForTrackingLocationWorker(MainActivity.this,0,5);
+            //TestUtils.startLocationTrackingService(MainActivity.this);
         });
 
         Button stopBtn = findViewById(R.id.stopBtn);

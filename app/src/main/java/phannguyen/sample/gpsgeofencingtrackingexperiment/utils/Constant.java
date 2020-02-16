@@ -13,15 +13,15 @@ public class Constant {
 
     public static final String SIGNAL_KEY  = "signal";
 
-    public static long UPDATE_INTERVAL = 10 * 1000;  /* 10 secs */
+    public static long UPDATE_INTERVAL = 60 * 1000;  /* 60 secs */
 
-    public static long FASTEST_INTERVAL = 2000; /* 2 sec */
+    public static long FASTEST_INTERVAL = 30* 1000; /* 30 sec */
 
     public static final int INTERVAL_VERY_SLOW_MOVE_IN_MS = 120*1000;//2mins
 
     public static final int INTERVAL_SLOW_MOVE_IN_MS = 60*1000;//1min
 
-    public static final int STAY_DISTANCE_IN_MET = 50;//in this distance, device consider as not move
+    public static final int STAY_DISTANCE_IN_MET = 30;//in this distance, device consider as not move
 
     public static final int DETECT_LOCATION_ACCURACY = 100;//in metter mean that the distance bwt of real location and result location <= 100m
 

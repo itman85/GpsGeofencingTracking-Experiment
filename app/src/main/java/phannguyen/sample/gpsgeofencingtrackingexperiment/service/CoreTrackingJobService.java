@@ -19,6 +19,7 @@ import com.google.android.gms.location.LocationServices;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 
 import phannguyen.sample.gpsgeofencingtrackingexperiment.helper.ServiceHelper;
 import phannguyen.sample.gpsgeofencingtrackingexperiment.helper.WorkManagerHelper;
@@ -44,11 +45,21 @@ public class CoreTrackingJobService extends JobIntentService {
 
     private static final String TAG = "CoreTrackingJobSv";
 
+
     /**
      * Convenience method for enqueuing work in to this service.
      */
     public static void enqueueWork(Context context, Intent intent) {
+        // if it already enqueued, so next one will be call onHandleWork as its turn and not call onCreate again.
+        // so no matter how many enqueued, it only call onCreate and onDestroy one time and call onHandleWork multiple times
         enqueueWork(context, CoreTrackingJobService.class, JOB_ID, intent);
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        SbLog.i(TAG,"Core tracking Created");
+        FileLogs.writeLog(this,TAG,"I","Create Core Tracking");
     }
 
     @Override
@@ -111,6 +122,13 @@ public class CoreTrackingJobService extends JobIntentService {
             }
 
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        SbLog.i(TAG,"Core tracking Destroyed");
+        FileLogs.writeLog(this,TAG,"I","Destroy Core Tracking");
     }
 
     private void startAlarmLocationTrigger(int delayInMs){

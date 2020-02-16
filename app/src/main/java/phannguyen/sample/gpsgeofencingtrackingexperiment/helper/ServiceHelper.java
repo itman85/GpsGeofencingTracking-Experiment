@@ -4,14 +4,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Build;
-import android.os.FileUtils;
 
 import java.util.Map;
 
-import phannguyen.sample.gpsgeofencingtrackingexperiment.BuildConfig;
 import phannguyen.sample.gpsgeofencingtrackingexperiment.service.CoreTrackingJobService;
 import phannguyen.sample.gpsgeofencingtrackingexperiment.service.LocationRequestUpdateService;
-import phannguyen.sample.gpsgeofencingtrackingexperiment.utils.FileLogs;
+import phannguyen.sample.gpsgeofencingtrackingexperiment.service.LocationRequestUpdateServiceOreo;
 
 public class ServiceHelper {
 
@@ -32,6 +30,18 @@ public class ServiceHelper {
             context.startService(serviceIntent);
         }else{
             // from android 8+ will start job intent service
+            Intent serviceIntent = new Intent(context, LocationRequestUpdateServiceOreo.class);
+            if (bundle != null) {
+                for (String key : bundle.keySet()) {
+                    if (bundle.get(key) instanceof String)
+                        serviceIntent.putExtra(key, (String) bundle.get(key));
+                    else if (bundle.get(key) instanceof Boolean)
+                        serviceIntent.putExtra(key, (Boolean) bundle.get(key));
+                    else if (bundle.get(key) instanceof Integer)
+                        serviceIntent.putExtra(key, (Integer) bundle.get(key));
+                }
+            }
+            LocationRequestUpdateServiceOreo.enqueueWork(context,serviceIntent);
         }
     }
 
