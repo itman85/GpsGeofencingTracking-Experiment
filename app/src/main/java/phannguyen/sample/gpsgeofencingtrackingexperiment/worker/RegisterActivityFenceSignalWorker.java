@@ -1,6 +1,7 @@
 package phannguyen.sample.gpsgeofencingtrackingexperiment.worker;
 
 import android.content.Context;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.work.Data;
@@ -10,14 +11,24 @@ import androidx.work.WorkerParameters;
 import com.google.android.gms.awareness.Awareness;
 import com.google.android.gms.awareness.fence.AwarenessFence;
 import com.google.android.gms.awareness.fence.DetectedActivityFence;
+import com.google.android.gms.awareness.fence.FenceQueryRequest;
+import com.google.android.gms.awareness.fence.FenceQueryResponse;
+import com.google.android.gms.awareness.fence.FenceState;
+import com.google.android.gms.awareness.fence.FenceStateMap;
 import com.google.android.gms.awareness.fence.FenceUpdateRequest;
 import com.google.android.gms.awareness.fence.HeadphoneFence;
 import com.google.android.gms.awareness.state.HeadphoneState;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+
+import java.util.Arrays;
+import java.util.Date;
 
 import phannguyen.sample.gpsgeofencingtrackingexperiment.helper.PendingIntentHelper;
 import phannguyen.sample.gpsgeofencingtrackingexperiment.utils.FileLogs;
 import phannguyen.sample.gpsgeofencingtrackingexperiment.utils.SbLog;
 
+import static android.provider.Settings.System.DATE_FORMAT;
 import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.ACTIVITY_FENCE_KEY;
 
 public class RegisterActivityFenceSignalWorker extends Worker {
@@ -88,6 +99,35 @@ public class RegisterActivityFenceSignalWorker extends Worker {
                 .addOnFailureListener(e -> {
                     SbLog.e(TAG, "Activity Fence could not be registered again: " + e);
                     FileLogs.writeLog(this.getApplicationContext(),TAG,"E","Activity Fence could not be registered again: " + e);
+                });
+    }
+
+    // query fence if not existed,so re-register
+    protected void queryFence(final String fenceKey) {
+        Awareness.getFenceClient(this.getApplicationContext())
+                .queryFences(FenceQueryRequest.forFences(Arrays.asList(fenceKey)))
+                .addOnSuccessListener(new OnSuccessListener<FenceQueryResponse>() {
+                    @Override
+                    public void onSuccess(FenceQueryResponse response) {
+                        FenceStateMap map = response.getFenceStateMap();
+                        for (String fenceKey : map.getFenceKeys()) {
+                            FenceState fenceState = map.getFenceState(fenceKey);
+                            Log.i(TAG, "Fence " + fenceKey + ": "
+                                    + fenceState.getCurrentState()
+                                    + ", was="
+                                    + fenceState.getPreviousState()
+                                    + ", lastUpdateTime="
+                                    + DATE_FORMAT.format(
+                                    String.valueOf(new Date(fenceState.getLastFenceUpdateTimeMillis()))));
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e(TAG, "Could not query fence: " + fenceKey);
+                        return;
+                    }
                 });
     }
 }

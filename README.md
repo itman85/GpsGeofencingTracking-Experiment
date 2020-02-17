@@ -25,6 +25,7 @@ Xem trong comment của link sau:
 https://blog.mindorks.com/activity-recognition-in-android-still-walking-running-driving-and-much-more
 Codelab Activity Recognition Transition API 
 https://codelabs.developers.google.com/codelabs/activity-recognition-transition/index.html#0
+The Google Awareness API is also designed to manage system resources on its own, so using it shouldn't cause additional battery drain or require more processing power. Google says the Awareness API monitors its battery and data usage itself, so ideally developers won't have to worry about modifying any part of their apps, aside from adding calls
 
 I.Android < 8
 Trigger screen on/off -> Dựa vào event này sẽ đi gọi module kích hoạt track user activity(Move or Idle).
