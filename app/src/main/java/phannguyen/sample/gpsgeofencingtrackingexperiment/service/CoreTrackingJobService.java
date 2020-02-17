@@ -52,6 +52,7 @@ public class CoreTrackingJobService extends JobIntentService {
     public static void enqueueWork(Context context, Intent intent) {
         // if it already enqueued, so next one will be call onHandleWork as its turn and not call onCreate again.
         // so no matter how many enqueued, it only call onCreate and onDestroy one time and call onHandleWork multiple times
+        // Destroy called only there no more task in queue or running
         enqueueWork(context, CoreTrackingJobService.class, JOB_ID, intent);
     }
 

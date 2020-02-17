@@ -8,10 +8,14 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.Looper;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.JobIntentService;
 
@@ -47,11 +51,12 @@ public class LocationRequestUpdateServiceOreo extends JobIntentService implement
     private LocationRequest mLocationRequest;
     private LocationCallback mLocationCallback;
     //private Handler mServiceHandler;
+    private HandlerThread mWorkerThread;
     private boolean isStartTracking;
     public static LocationManager locationManager;
     private String locationProvider;
 
-    CountDownLatch mLatch=new CountDownLatch(1);
+    private static CountDownLatch mLatch;
 
     private int serviceRunCount;// this help to prevent onHandleWork call multiple time while it running or enqueued
 
@@ -60,7 +65,14 @@ public class LocationRequestUpdateServiceOreo extends JobIntentService implement
      * Convenience method for enqueuing work in to this service.
      */
     public static void enqueueWork(Context context, Intent intent) {
-        enqueueWork(context, LocationRequestUpdateServiceOreo.class, JOB_ID, intent);
+        SbLog.i(TAG,"Enqueue Location request update service");
+        enqueueWork(context, LocationRequestUpdateServiceOreo.class, JOB_ID, intent);// let task in queue first before release await from previous task in order it wont re-create service
+        if(intent!=null && intent.hasExtra("action") && "STOP".equals(intent.getStringExtra("action"))) {
+            SbLog.i(TAG,"Release pending current location request update service");
+            if(mLatch!=null)
+                mLatch.countDown();
+        }
+
     }
 
     @Override
@@ -69,9 +81,11 @@ public class LocationRequestUpdateServiceOreo extends JobIntentService implement
         SbLog.i(TAG,"Location Request Update Service initService");
         FileLogs.writeLog(this,TAG,"I","Location Request Update Service initService");
         FileLogs.writeLogByDate(this,TAG,"I","Location Request Update Service initService");
-        serviceRunCount = 0;
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
+        serviceRunCount = 0;
+        mLatch = new CountDownLatch(1);
+
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         mLocationRequest = new LocationRequest();
         mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
         mLocationRequest.setInterval(UPDATE_INTERVAL);
@@ -83,9 +97,9 @@ public class LocationRequestUpdateServiceOreo extends JobIntentService implement
                 onNewLocation(locationResult.getLastLocation());
             }
         };
-        /*HandlerThread handlerThread = new HandlerThread(TAG);
-        handlerThread.start();
-        mServiceHandler = new Handler(handlerThread.getLooper());*/
+        mWorkerThread = new HandlerThread(TAG);
+        mWorkerThread.start();
+        //mServiceHandler = new Handler(handlerThread.getLooper());
         isStartTracking = false;
 
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
@@ -96,11 +110,13 @@ public class LocationRequestUpdateServiceOreo extends JobIntentService implement
     @Override
     protected void onHandleWork(@NonNull Intent intent) {
         serviceRunCount++;
+        SbLog.i(TAG,"Location Request Update Service handleStartCommand @"+serviceRunCount);
         FileLogs.writeLog(this,TAG,"I","*** Location Request Update Service handleStartCommand");
         FileLogs.writeLogByDate(this,TAG,"I","*** Location Request Update Service handleStartCommand");
         boolean isOnTracking = false;
         //for case this service is killed by OS, it will restart with null intent, then request location update again
         if(intent==null){
+            // check if still on tracking from previous task, so continue tracking on this task
             isOnTracking = SharedPreferencesHandler.getLocationRequestUpdateStatus(this);
             if(isOnTracking){
                 isStartTracking  = false;//restart request update location incase this service killed by OS
@@ -108,7 +124,7 @@ public class LocationRequestUpdateServiceOreo extends JobIntentService implement
             }else{
                 //no location request update live now, so kill this service
                 FileLogs.writeLog(this,TAG,"I","Service restart Null Intent,Not on tracking so Stop now");
-                stopSelf();//https://stackoverflow.com/questions/8279199/can-i-call-stopself-in-service-onstartcommand
+                return;//stop service
             }
         }
 
@@ -121,14 +137,14 @@ public class LocationRequestUpdateServiceOreo extends JobIntentService implement
                 if(!isStartTracking) {
                     FileLogs.writeLog(this,TAG,"I","Start Request location update now");
                     FileLogs.writeLogByDate(this,TAG,"I","Start Request location update now");
-                    mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.getMainLooper()); // todo see if handle update in other thread?
-                   // locationManager.requestLocationUpdates(locationProvider,INTERVAL_SLOW_MOVE_IN_MS,STAY_DISTANCE_IN_MET,this); // todo see if handle update in other thread?
+                    mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, mWorkerThread.getLooper()); // todo see if handle update in other thread?
+                    locationManager.requestLocationUpdates(locationProvider,INTERVAL_SLOW_MOVE_IN_MS,STAY_DISTANCE_IN_MET,this,mWorkerThread.getLooper()); // todo see if handle update in other thread?
                     isStartTracking = true;
                     SharedPreferencesHandler.setLocationRequestUpdateStatus(this, true);
                 }
             }
         }else if(intent!=null && intent.hasExtra("action") && "STOP".equals(intent.getStringExtra("action"))){
-            //Log.e(TAG, "*** Remove Request location update");
+            SbLog.i(TAG, "*** Remove Request location update");
             FileLogs.writeLog(this,TAG,"I","*** Remove Request location update,STOP update location now");
             FileLogs.writeLogByDate(this,TAG,"I","*** Remove Request location update,STOP update location now");
             removeLocationRequestUpdate();
@@ -139,35 +155,35 @@ public class LocationRequestUpdateServiceOreo extends JobIntentService implement
         if(serviceRunCount>1)
             return;
         try {
-            mLatch.await();
+            mLatch.await();// keep first task live long util STOP signal come
         } catch (InterruptedException e) {
             SbLog.e(TAG,e);
         }
-        SbLog.i(TAG,"Finish handle Job");
+        SbLog.i(TAG,"Finish handle Job @"+serviceRunCount);
 
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
+        SbLog.i(TAG," Location Request Update Service Destroy");
         FileLogs.writeLog(this,TAG,"I","*** Location Request Update Service Destroy");
         FileLogs.writeLogByDate(this,TAG,"I","*** Location Request Update Service Destroy");
         SharedPreferencesHandler.setLocationRequestUpdateStatus(this, false);
-        //mServiceHandler.removeCallbacksAndMessages(null);
+        removeLocationRequestUpdate();
         locationManager = null;
+        mLatch = null;
     }
 
-
-    // todo when this called?
-    private void stopService(){
-        //Release await
-        mLatch.countDown();
-    }
 
     @SuppressLint("MissingPermission")
     private void removeLocationRequestUpdate(){
         mFusedLocationClient.removeLocationUpdates(mLocationCallback);
         locationManager.removeUpdates(this);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            mWorkerThread.quitSafely();
+        }else
+            mWorkerThread.quit();
     }
 
     private void onNewLocation(Location location) {
