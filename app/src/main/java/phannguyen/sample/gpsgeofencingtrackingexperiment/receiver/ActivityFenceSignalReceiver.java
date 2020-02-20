@@ -74,7 +74,7 @@ public class ActivityFenceSignalReceiver extends BroadcastReceiver {
         FileLogs.writeLog(context, TAG, "I", "USER NOT MOVE SIGNAL");
         FileLogs.writeLogByDate(context, TAG, "I", "USER NOT MOVE SIGNAL");
         //let core location tracking decide to stop tracking or not
-        WorkManagerHelper.startLocationTriggerWorkerOnetimeRequest(context,INTERVAL_VERY_SLOW_MOVE_IN_MS, ExistingWorkPolicy.REPLACE.ordinal());
+        WorkManagerHelper.startLocationTriggerWorkerOnetimeRequest(context,INTERVAL_VERY_SLOW_MOVE_IN_MS/1000, ExistingWorkPolicy.REPLACE.ordinal());
 
 
     }

@@ -189,7 +189,8 @@ public class LocationRequestUpdateServiceOreo extends JobIntentService implement
     private void onNewLocation(Location location) {
         //only accept location with accuracy less than DETECT_LOCATION_ACCURACY
         if (location != null && location.getAccuracy() < DETECT_LOCATION_ACCURACY) {
-            CoreTrackingJobService.updateLastLocation(this,(float) location.getLatitude(),(float) location.getLatitude(),true);
+            CoreTrackingJobService.updateLastLocation(this,(float) location.getLatitude(),(float) location.getLongitude(),true);
+            //FileLogs.writeLog(this,"Result","I",location.getLatitude() + ","+location.getLongitude());
             //let core tracking service process this location data
             Map<String,Object> bundle = new HashMap<>();
             bundle.put(BUNDLE_EXTRA_LOCATION_RESULT, location);

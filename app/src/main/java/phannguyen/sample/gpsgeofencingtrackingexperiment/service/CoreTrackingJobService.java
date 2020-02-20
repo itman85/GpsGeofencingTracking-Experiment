@@ -172,7 +172,7 @@ public class CoreTrackingJobService extends JobIntentService {
             FileLogs.writeLogByDate(this,LOCATION_RESULT_TAG,"I","Save Location At Moving Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());
             //store location
             if(isSave)
-                updateLastLocation(this,(float) location.getLatitude(),(float) location.getLatitude(),false);
+                updateLastLocation(this,(float) location.getLatitude(),(float) location.getLongitude(),false);
             //UtilsFn.saveLocation(location,this);
             //check if location request update still alive, then start alarm
             startAlarmLocationTrigger(INTERVAL_MOVE_IN_MS,ExistingWorkPolicy.KEEP.ordinal());
@@ -188,8 +188,6 @@ public class CoreTrackingJobService extends JobIntentService {
                 Log.i(TAG,"***User Stay a bit Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());
                 FileLogs.writeLog(this,TAG,"I","***User stay a bit Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());
                 FileLogs.writeLogByDate(this,TAG,"I","***User stay a bit Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());
-                if(isSave)
-                    updateLastLocation(this,(float) location.getLatitude(),(float) location.getLatitude(),false);
                 //check if location request update still alive, then start alarm
                 startAlarmLocationTrigger(INTERVAL_SLOW_MOVE_IN_MS,ExistingWorkPolicy.KEEP.ordinal());
             }

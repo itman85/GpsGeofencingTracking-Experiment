@@ -61,7 +61,7 @@ public class WorkManagerHelper {
     }
 
     public static void cancelLocationTriggerWorkerOnetimeRequest(Context context){
-        FileLogs.writeLog(context,"MainAppProcessCallbackImpl","I","4-App-Invoke method cancelLocationTriggerWorkerOnetimeRequest");
+        FileLogs.writeLog(context,"WorkManagerHelper","I","cancel Location TriggerWorker Onetime Request");
         WorkManager.getInstance(context).cancelUniqueWork(LOCATION_TRACKING_INTERVAL_WORKER_UNIQUE_NAME);
     }
 }
