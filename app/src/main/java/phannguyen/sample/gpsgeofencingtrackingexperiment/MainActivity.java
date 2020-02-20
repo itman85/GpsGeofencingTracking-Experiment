@@ -6,12 +6,16 @@ import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.widget.Button;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +24,8 @@ import phannguyen.sample.gpsgeofencingtrackingexperiment.helper.WorkManagerHelpe
 import phannguyen.sample.gpsgeofencingtrackingexperiment.receiver.ScreenStateReceiver;
 import phannguyen.sample.gpsgeofencingtrackingexperiment.service.RegisterTriggerService;
 import phannguyen.sample.gpsgeofencingtrackingexperiment.utils.TestUtils;
+
+import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -52,6 +58,23 @@ public class MainActivity extends AppCompatActivity {
         registerBtn.setOnClickListener(v -> {
             Intent serviceIntent = new Intent(MainActivity.this, RegisterTriggerService.class);
             startService(serviceIntent);
+        });
+
+        Button ignoreBatteryBtn = findViewById(R.id.ignoreBatteryBtn);
+        ignoreBatteryBtn.setOnClickListener(v -> {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                String packageName = getPackageName();
+                PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+                if (!pm.isIgnoringBatteryOptimizations(packageName)) {
+                    Intent intent = new Intent();
+                    intent.setAction(android.provider.Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+                    intent.setFlags(FLAG_ACTIVITY_NEW_TASK);
+                    intent.setData(Uri.parse("package:" + packageName));
+                    startActivity(intent);
+                }
+            }else{
+                Toast.makeText(MainActivity.this,"Only support from android 6",Toast.LENGTH_LONG).show();
+            }
         });
 
         askPermission();

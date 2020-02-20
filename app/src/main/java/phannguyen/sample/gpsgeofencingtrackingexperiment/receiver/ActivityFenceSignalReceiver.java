@@ -6,17 +6,21 @@ import android.content.Intent;
 import android.text.TextUtils;
 import android.util.Log;
 
+import androidx.work.ExistingWorkPolicy;
+
 import com.google.android.gms.awareness.fence.FenceState;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import phannguyen.sample.gpsgeofencingtrackingexperiment.helper.ServiceHelper;
+import phannguyen.sample.gpsgeofencingtrackingexperiment.helper.WorkManagerHelper;
 import phannguyen.sample.gpsgeofencingtrackingexperiment.utils.FileLogs;
 import phannguyen.sample.gpsgeofencingtrackingexperiment.utils.SbLog;
 
 import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.ACTIVITY_FENCE_KEY;
 import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.ACTIVITY_SIGNAL_RECEIVER_ACTION;
+import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.INTERVAL_VERY_SLOW_MOVE_IN_MS;
 
 public class ActivityFenceSignalReceiver extends BroadcastReceiver {
     private static final String TAG = "ActivitySignalRc";
@@ -70,6 +74,7 @@ public class ActivityFenceSignalReceiver extends BroadcastReceiver {
         FileLogs.writeLog(context, TAG, "I", "USER NOT MOVE SIGNAL");
         FileLogs.writeLogByDate(context, TAG, "I", "USER NOT MOVE SIGNAL");
         //let core location tracking decide to stop tracking or not
+        WorkManagerHelper.startLocationTriggerWorkerOnetimeRequest(context,INTERVAL_VERY_SLOW_MOVE_IN_MS, ExistingWorkPolicy.REPLACE.ordinal());
 
 
     }

@@ -48,7 +48,7 @@ public class LocationRequestUpdateService extends Service implements LocationLis
     private LocationCallback mLocationCallback;
     //private Handler mServiceHandler;
     private boolean isStartTracking;
-    public static LocationManager locationManager;
+    //public static LocationManager locationManager;
     private String locationProvider;
 
     @Nullable
@@ -81,9 +81,9 @@ public class LocationRequestUpdateService extends Service implements LocationLis
         mServiceHandler = new Handler(handlerThread.getLooper());*/
         isStartTracking = false;
 
-        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        /*locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         locationProvider = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)? LocationManager.GPS_PROVIDER:
-                LocationManager.NETWORK_PROVIDER;
+                LocationManager.NETWORK_PROVIDER;*/
     }
 
     @SuppressLint("MissingPermission")
@@ -115,7 +115,7 @@ public class LocationRequestUpdateService extends Service implements LocationLis
                     FileLogs.writeLog(this,TAG,"I","Start Request location update now");
                     FileLogs.writeLogByDate(this,TAG,"I","Start Request location update now");
                     mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
-                    locationManager.requestLocationUpdates(locationProvider,INTERVAL_SLOW_MOVE_IN_MS,STAY_DISTANCE_IN_MET,this);
+                    //locationManager.requestLocationUpdates(locationProvider,INTERVAL_SLOW_MOVE_IN_MS,STAY_DISTANCE_IN_MET,this);
                     isStartTracking = true;
                     SharedPreferencesHandler.setLocationRequestUpdateStatus(this, true);
                 }
@@ -138,18 +138,19 @@ public class LocationRequestUpdateService extends Service implements LocationLis
         FileLogs.writeLogByDate(this,TAG,"I","*** Location Request Update Service Destroy");
         SharedPreferencesHandler.setLocationRequestUpdateStatus(this, false);
         //mServiceHandler.removeCallbacksAndMessages(null);
-        locationManager = null;
+        //locationManager = null;
     }
 
     @SuppressLint("MissingPermission")
     private void removeLocationRequestUpdate(){
         mFusedLocationClient.removeLocationUpdates(mLocationCallback);
-        locationManager.removeUpdates(this);
+        //locationManager.removeUpdates(this);
     }
 
     private void onNewLocation(Location location) {
         //only accept location with accuracy less than DETECT_LOCATION_ACCURACY
         if (location != null && location.getAccuracy() < DETECT_LOCATION_ACCURACY) {
+            CoreTrackingJobService.updateLastLocation(this,(float) location.getLatitude(),(float) location.getLatitude(),true);
             //let core tracking service process this location data
             Map<String,Object> bundle = new HashMap<>();
             bundle.put(BUNDLE_EXTRA_LOCATION_RESULT, location);

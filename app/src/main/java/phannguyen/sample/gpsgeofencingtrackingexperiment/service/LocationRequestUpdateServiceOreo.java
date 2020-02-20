@@ -53,7 +53,7 @@ public class LocationRequestUpdateServiceOreo extends JobIntentService implement
     //private Handler mServiceHandler;
     private HandlerThread mWorkerThread;
     private boolean isStartTracking;
-    public static LocationManager locationManager;
+    //public static LocationManager locationManager;
     private String locationProvider;
 
     private static CountDownLatch mLatch;
@@ -102,9 +102,9 @@ public class LocationRequestUpdateServiceOreo extends JobIntentService implement
         //mServiceHandler = new Handler(handlerThread.getLooper());
         isStartTracking = false;
 
-        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        /*locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         locationProvider = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)? LocationManager.GPS_PROVIDER:
-                LocationManager.NETWORK_PROVIDER;
+                LocationManager.NETWORK_PROVIDER;*/
     }
 
     @Override
@@ -138,7 +138,7 @@ public class LocationRequestUpdateServiceOreo extends JobIntentService implement
                     FileLogs.writeLog(this,TAG,"I","Start Request location update now");
                     FileLogs.writeLogByDate(this,TAG,"I","Start Request location update now");
                     mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, mWorkerThread.getLooper()); // todo see if handle update in other thread?
-                    locationManager.requestLocationUpdates(locationProvider,INTERVAL_SLOW_MOVE_IN_MS,STAY_DISTANCE_IN_MET,this,mWorkerThread.getLooper()); // todo see if handle update in other thread?
+                    //locationManager.requestLocationUpdates(locationProvider,INTERVAL_SLOW_MOVE_IN_MS,STAY_DISTANCE_IN_MET,this,mWorkerThread.getLooper()); // todo see if handle update in other thread?
                     isStartTracking = true;
                     SharedPreferencesHandler.setLocationRequestUpdateStatus(this, true);
                 }
@@ -171,7 +171,7 @@ public class LocationRequestUpdateServiceOreo extends JobIntentService implement
         FileLogs.writeLogByDate(this,TAG,"I","*** Location Request Update Service Destroy");
         SharedPreferencesHandler.setLocationRequestUpdateStatus(this, false);
         removeLocationRequestUpdate();
-        locationManager = null;
+        //locationManager = null;
         mLatch = null;
     }
 
@@ -179,7 +179,7 @@ public class LocationRequestUpdateServiceOreo extends JobIntentService implement
     @SuppressLint("MissingPermission")
     private void removeLocationRequestUpdate(){
         mFusedLocationClient.removeLocationUpdates(mLocationCallback);
-        locationManager.removeUpdates(this);
+        //locationManager.removeUpdates(this);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
             mWorkerThread.quitSafely();
         }else
@@ -189,6 +189,7 @@ public class LocationRequestUpdateServiceOreo extends JobIntentService implement
     private void onNewLocation(Location location) {
         //only accept location with accuracy less than DETECT_LOCATION_ACCURACY
         if (location != null && location.getAccuracy() < DETECT_LOCATION_ACCURACY) {
+            CoreTrackingJobService.updateLastLocation(this,(float) location.getLatitude(),(float) location.getLatitude(),true);
             //let core tracking service process this location data
             Map<String,Object> bundle = new HashMap<>();
             bundle.put(BUNDLE_EXTRA_LOCATION_RESULT, location);
@@ -208,6 +209,7 @@ public class LocationRequestUpdateServiceOreo extends JobIntentService implement
     }
 
     ////////////////////////////////////////////
+    // for location manager
     @Override
     public void onLocationChanged(Location location) {
         //only accept location with accuracy less than DETECT_LOCATION_ACCURACY

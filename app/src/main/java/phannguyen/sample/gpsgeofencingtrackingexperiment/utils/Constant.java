@@ -17,15 +17,19 @@ public class Constant {
 
     public static long FASTEST_INTERVAL = 30* 1000; /* 30 sec */
 
+    public static final int INTERVAL_MOVE_IN_MS = 5*60*1000;//5mins
+
     public static final int INTERVAL_VERY_SLOW_MOVE_IN_MS = 120*1000;//2mins
 
-    public static final int INTERVAL_SLOW_MOVE_IN_MS = 60*1000;//1min
+    public static final int INTERVAL_SLOW_MOVE_IN_MS = 180*1000;//3min
 
     public static final int STAY_DISTANCE_IN_MET = 30;//in this distance, device consider as not move
 
     public static final int DETECT_LOCATION_ACCURACY = 100;//in metter mean that the distance bwt of real location and result location <= 100m
 
     public static long TIMEOUT_STAY_LOCATION = 5*60*1000;  /* 5 MINS USER stay a location in 5 mins consider as STILL*/
+
+    public static long UPDATE_STILL_TIME = 60*60*1000;  /* 60 MINS user STILL then update location*/
 
     public static final int STILL_CONFIDENCE = 90;
 
