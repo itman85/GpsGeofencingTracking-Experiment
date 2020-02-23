@@ -10,6 +10,7 @@
     <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
 
     <application
         android:name=".MyApp"
@@ -67,6 +68,18 @@
             android:process=":assistant"
             android:stopWithTask="false"
             android:label="System Assistant Service"/>
+
+        <service
+            android:name=".service.LocationRequestUpdateForegroundService"
+            android:process=":location"
+            android:enabled="true"
+            android:exported="true"></service>
+
+        <service
+            android:name=".service.CoreDetectActivityJobService"
+            android:exported="false"
+            android:process=":location"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
     </application>
 
 </manifest>

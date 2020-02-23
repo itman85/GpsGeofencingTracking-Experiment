@@ -30,6 +30,9 @@ import phannguyen.sample.gpsgeofencingtrackingexperiment.utils.SbLog;
 
 import static android.provider.Settings.System.DATE_FORMAT;
 import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.ACTIVITY_FENCE_KEY;
+import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.FAST_ACTIVITY_FENCE_KEY;
+import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.NOT_MOVE_ACTIVITY_FENCE_KEY;
+import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.SLOW_ACTIVITY_FENCE_KEY;
 
 public class RegisterActivityFenceSignalWorker extends Worker {
     private static final String TAG = "RegisterActivityWorker";
@@ -58,6 +61,14 @@ public class RegisterActivityFenceSignalWorker extends Worker {
         AwarenessFence walkingFence = DetectedActivityFence.during(DetectedActivityFence.WALKING);
 
         AwarenessFence stayFence = DetectedActivityFence.during(DetectedActivityFence.STILL);
+
+        AwarenessFence fastMovingFence = AwarenessFence.or(DetectedActivityFence.during(DetectedActivityFence.IN_VEHICLE),
+                DetectedActivityFence.during(DetectedActivityFence.ON_BICYCLE));
+
+        AwarenessFence slowMovingFence = DetectedActivityFence.during(DetectedActivityFence.ON_FOOT);
+
+        AwarenessFence notMovingFence = AwarenessFence.not(AwarenessFence.and(DetectedActivityFence.during(DetectedActivityFence.IN_VEHICLE),
+                DetectedActivityFence.during(DetectedActivityFence.ON_BICYCLE),DetectedActivityFence.during(DetectedActivityFence.ON_FOOT)));
 
         // There are lots of cases where it's handy for the device to know if headphones have been
         // plugged in or unplugged.  For instance, if a music app detected your headphones fell out
@@ -89,7 +100,9 @@ public class RegisterActivityFenceSignalWorker extends Worker {
         FileLogs.writeLogByDate(this.getApplicationContext(),TAG,"I","Activity Fence Register Now.");
         // Register the fence to receive callbacks.
         Awareness.getFenceClient(this.getApplicationContext()).updateFences(new FenceUpdateRequest.Builder()
-                .addFence(ACTIVITY_FENCE_KEY, stayFence, PendingIntentHelper.getFenceAwareNessPendingIntent(getApplicationContext()))
+                .addFence(FAST_ACTIVITY_FENCE_KEY, fastMovingFence, PendingIntentHelper.getFenceAwareNessPendingIntent(getApplicationContext()))
+                .addFence(NOT_MOVE_ACTIVITY_FENCE_KEY, stayFence, PendingIntentHelper.getFenceAwareNessPendingIntent(getApplicationContext()))
+                .addFence(SLOW_ACTIVITY_FENCE_KEY, slowMovingFence, PendingIntentHelper.getFenceAwareNessPendingIntent(getApplicationContext()))
                 .build())
                 .addOnSuccessListener(aVoid -> {
                     SbLog.i(TAG, "Activity Fence was successfully registered again.");

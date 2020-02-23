@@ -14,6 +14,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.PowerManager;
+import android.provider.Settings;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -37,13 +38,15 @@ public class MainActivity extends AppCompatActivity {
 
         Button startBtn = findViewById(R.id.startBtn);
         startBtn.setOnClickListener(v -> {
-            WorkManagerHelper.startOneTimeRegisterUserActivityForTrackingLocationWorker(MainActivity.this,0,5);
+           WorkManagerHelper.startOneTimeRegisterUserActivityForTrackingLocationWorker(MainActivity.this,0,5);
             //TestUtils.startLocationTrackingService(MainActivity.this);
+            //TestUtils.startLocationTrackingForegroundService(MainActivity.this);
         });
 
         Button stopBtn = findViewById(R.id.stopBtn);
         stopBtn.setOnClickListener(v -> {
            // throw new RuntimeException("Test Crash"); // Force a crash
+            TestUtils.stopLocationTrackingForegroundService(MainActivity.this);
         });
 
         Button awareBtn = findViewById(R.id.awarenessBtn);
@@ -117,6 +120,16 @@ public class MainActivity extends AppCompatActivity {
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_BACKGROUND_LOCATION},
                     MY_PERMISSIONS_REQUEST_LOCATION);
         }
+    }
+
+    //https://www.spiria.com/en/blog/mobile-development/hiding-foreground-services-notifications-in-android/
+    private void openSettings() {
+        Intent intent = new Intent();
+        intent.setAction( Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+        Uri uri = Uri.fromParts("package", BuildConfig.APPLICATION_ID, null);
+        intent.setData(uri);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
     }
 
     @Override

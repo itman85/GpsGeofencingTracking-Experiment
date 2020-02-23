@@ -5,9 +5,13 @@ import android.content.Intent;
 import android.location.Location;
 import android.os.Build;
 
+import androidx.core.content.ContextCompat;
+
 import java.util.Map;
 
+import phannguyen.sample.gpsgeofencingtrackingexperiment.service.CoreDetectActivityJobService;
 import phannguyen.sample.gpsgeofencingtrackingexperiment.service.CoreTrackingJobService;
+import phannguyen.sample.gpsgeofencingtrackingexperiment.service.LocationRequestUpdateForegroundService;
 import phannguyen.sample.gpsgeofencingtrackingexperiment.service.LocationRequestUpdateService;
 import phannguyen.sample.gpsgeofencingtrackingexperiment.service.LocationRequestUpdateServiceOreo;
 
@@ -60,5 +64,44 @@ public class ServiceHelper {
             }
         }
         CoreTrackingJobService.enqueueWork(context,serviceIntent);
+    }
+
+    public static void startLocationRequestUpdateForegroundService(Context context,Map<String, Object> bundle){
+        Intent serviceIntent = new Intent(context, LocationRequestUpdateForegroundService.class);
+        if(bundle!=null) {
+            for (String key : bundle.keySet()) {
+                if(bundle.get(key) instanceof String)
+                    serviceIntent.putExtra(key,(String)bundle.get(key));
+                else if(bundle.get(key) instanceof Boolean)
+                    serviceIntent.putExtra(key,(Boolean) bundle.get(key));
+                else if(bundle.get(key) instanceof Integer)
+                    serviceIntent.putExtra(key,(Integer) bundle.get(key));
+                else if(bundle.get(key) instanceof Location)
+                    serviceIntent.putExtra(key,(Location)bundle.get(key));
+            }
+        }
+        ContextCompat.startForegroundService(context, serviceIntent);
+    }
+
+    public static void stopLocationRequestUpdateForegroundService(Context context){
+        Intent serviceIntent = new Intent(context, LocationRequestUpdateForegroundService.class);
+        context.stopService(serviceIntent);
+    }
+
+    public static void startCoreActivityTrackingJobService(Context context, Map<String, Object> bundle){
+        Intent serviceIntent = new Intent(context, CoreDetectActivityJobService.class);
+        if(bundle!=null) {
+            for (String key : bundle.keySet()) {
+                if(bundle.get(key) instanceof String)
+                    serviceIntent.putExtra(key,(String)bundle.get(key));
+                else if(bundle.get(key) instanceof Boolean)
+                    serviceIntent.putExtra(key,(Boolean) bundle.get(key));
+                else if(bundle.get(key) instanceof Integer)
+                    serviceIntent.putExtra(key,(Integer) bundle.get(key));
+                else if(bundle.get(key) instanceof Location)
+                    serviceIntent.putExtra(key,(Location)bundle.get(key));
+            }
+        }
+        CoreDetectActivityJobService.enqueueWork(context,serviceIntent);
     }
 }
