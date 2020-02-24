@@ -55,6 +55,7 @@ public class CoreTrackingJobService extends JobIntentService {
         // if it already enqueued, so next one will be call onHandleWork as its turn and not call onCreate again.
         // so no matter how many enqueued, it only call onCreate and onDestroy one time and call onHandleWork multiple times
         // Destroy called only there no more task in queue or running
+        FileLogs.writeLog(context,TAG,"I","Enqueue Core Tracking Job");
         enqueueWork(context, CoreTrackingJobService.class, JOB_ID, intent);
     }
 
@@ -226,7 +227,7 @@ public class CoreTrackingJobService extends JobIntentService {
         return distanceInMeters;
     }
 
-    public static void updateLastLocation(Context context,float lat,float lng, boolean checkToSave){
+    public static boolean updateLastLocation(Context context,float lat,float lng, boolean checkToSave){
         if(checkToSave){
             float lastLng = SharedPreferencesHandler.getLastLngLocation(context);
             float lastLat = SharedPreferencesHandler.getLastLatLocation(context);
@@ -235,7 +236,7 @@ public class CoreTrackingJobService extends JobIntentService {
                 SharedPreferencesHandler.setLastLngLocation(context, lng);
                 SharedPreferencesHandler.setLastMomentGPSNotChange(context, System.currentTimeMillis());
                 FileLogs.writeLog(context,"Result","I",lat + ","+lng);
-                return;
+                return false;
             }
             float distance = getMetersFromLatLong(lastLat,lastLng, lat, lng);
             //seem not move
@@ -247,6 +248,7 @@ public class CoreTrackingJobService extends JobIntentService {
                     SharedPreferencesHandler.setLastLngLocation(context, lng);
                     SharedPreferencesHandler.setLastMomentGPSNotChange(context, System.currentTimeMillis());
                     FileLogs.writeLog(context,"Result","I",lat + ","+lng);
+                    return true;
                 }
             }else{
                 SharedPreferencesHandler.setLastLatLocation(context, lat);
@@ -260,6 +262,7 @@ public class CoreTrackingJobService extends JobIntentService {
             SharedPreferencesHandler.setLastMomentGPSNotChange(context, System.currentTimeMillis());
             FileLogs.writeLog(context,"Result","D",lat + ","+lng);
         }
+        return false;
     }
 
     private void getSnapshotCurrentActivity(Context context, Location location){

@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
 
         Button startBtn = findViewById(R.id.startBtn);
         startBtn.setOnClickListener(v -> {
-           WorkManagerHelper.startOneTimeRegisterUserActivityForTrackingLocationWorker(MainActivity.this,0,5);
+            WorkManagerHelper.startOneTimeRegisterUserActivityForTrackingLocationWorker(MainActivity.this,0,5);
             //TestUtils.startLocationTrackingService(MainActivity.this);
             //TestUtils.startLocationTrackingForegroundService(MainActivity.this);
         });

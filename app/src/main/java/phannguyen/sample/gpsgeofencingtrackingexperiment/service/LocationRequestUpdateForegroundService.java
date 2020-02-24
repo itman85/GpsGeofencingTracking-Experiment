@@ -14,7 +14,11 @@ import android.os.IBinder;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
+import androidx.work.ExistingWorkPolicy;
 
+import com.google.android.gms.awareness.Awareness;
+import com.google.android.gms.location.ActivityRecognitionResult;
+import com.google.android.gms.location.DetectedActivity;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -34,7 +38,12 @@ import phannguyen.sample.gpsgeofencingtrackingexperiment.utils.SbLog;
 import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.BUNDLE_EXTRA_LOCATION_RESULT;
 import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.BUNDLE_EXTRA_LOCATION_SOURCE;
 import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.DETECT_LOCATION_ACCURACY;
+import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.ERROR_TAG;
 import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.FASTEST_INTERVAL;
+import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.FAST_MOVE_CONFIDENCE;
+import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.INTERVAL_SLOW_MOVE_IN_MS;
+import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.ONFOOT_CONFIDENCE;
+import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.STILL_CONFIDENCE;
 import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.UPDATE_INTERVAL;
 
 // For Android 8+
@@ -81,6 +90,8 @@ public class LocationRequestUpdateForegroundService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        // Cancel Tracking activity worker now, because going to track location now no matter what user activity
+        CoreDetectActivityJobService.cancelActivityTriggerAlarm(this);
         serviceRunCount++;
         // Exit if service already running
         if(serviceRunCount>1)
@@ -104,12 +115,54 @@ public class LocationRequestUpdateForegroundService extends Service {
         // https://stackoverflow.com/questions/44425584/context-startforegroundservice-did-not-then-call-service-startforeground
         startForeground(1, notification);// todo id?
         //do heavy work on a background thread
-        // Cancel Tracking activity worker, because tracking location now no matter what user activity
-        CoreDetectActivityJobService.cancelActivityTriggerAlarm(this);
         // request update location
         mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, mWorkerThread.getLooper());
         //stopSelf();
+        handleRestartService(intent);
         return START_STICKY;// re-create service (with null intent) if it get killed by OS
+    }
+
+    // In case this service get killed by system, and it restart as system's schedule. so need to check activity state before request update location
+    private void handleRestartService(Intent intent){
+        // Because service start_sticky, so when it restart will come with null intent
+        if(intent == null){
+            SbLog.i(TAG,"Service restart, so check activity state now");
+            FileLogs.writeLog(this,TAG,"I","Service restart, so check activity state now");
+            FileLogs.writeLogByDate(this,TAG,"I","Service restart, so check activity state now");
+            checkActivityToProcess();
+        }
+    }
+
+    /**
+     * if user still move fast then continue tracking, otherwise stop tracking service
+     */
+    private void checkActivityToProcess(){
+        Awareness.getSnapshotClient(this).getDetectedActivity()
+                .addOnSuccessListener(dar -> {
+                    ActivityRecognitionResult arr = dar.getActivityRecognitionResult();
+                    DetectedActivity probableActivity = arr.getMostProbableActivity();
+                    int confidence = probableActivity.getConfidence();
+                    String activityStr = probableActivity.toString();
+                    SbLog.i(TAG,"Activity: " + activityStr
+                            + ", Confidence: " + confidence + "/100");
+                    FileLogs.writeLog(this,TAG,"I","Get Snapshot Activity: " + activityStr
+                            + ", Confidence: " + confidence + "/100");
+                    //check if Fast move
+                    if((probableActivity.getType() == DetectedActivity.ON_BICYCLE ||
+                            probableActivity.getType() == DetectedActivity.IN_VEHICLE) &&
+                            confidence >= FAST_MOVE_CONFIDENCE) {
+                        SbLog.i(TAG,"User move fast,so keep tracking now");
+                        FileLogs.writeLog(this,TAG,"I","User move fast,so keep tracking now");
+                        FileLogs.writeLogByDate(this,TAG,"I","User move fast,so keep tracking now");
+                    }else {
+                        stopSelf();// stop tracking location now
+                    }
+                })
+
+                .addOnFailureListener(e -> {
+                    SbLog.e(TAG, "Could not detect activity: " + e);
+                    FileLogs.writeLog(this,ERROR_TAG,"E","Get Snapshot could not detect activity: " + e.getMessage());
+                });
     }
 
     @Override
@@ -146,18 +199,13 @@ public class LocationRequestUpdateForegroundService extends Service {
     private void onNewLocation(Location location) {
         //only accept location with accuracy less than DETECT_LOCATION_ACCURACY
         if (location != null && location.getAccuracy() < DETECT_LOCATION_ACCURACY) {
-            CoreTrackingJobService.updateLastLocation(this,(float) location.getLatitude(),(float) location.getLongitude(),true);
-            //FileLogs.writeLog(this,"Result","I",location.getLatitude() + ","+location.getLongitude());
-            //let core tracking service process this location data
-            //Map<String,Object> bundle = new HashMap<>();
-            //bundle.put(BUNDLE_EXTRA_LOCATION_RESULT, location);
-            //bundle.put(BUNDLE_EXTRA_LOCATION_SOURCE, "Fused");
-            //ServiceHelper.startCoreLocationTrackingJobService(this,bundle);
-            // use the Location
-            //Log.i(TAG,"***Last location is Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());
+            boolean isStayAround = CoreTrackingJobService.updateLastLocation(this,(float) location.getLatitude(),(float) location.getLongitude(),true);
             FileLogs.writeLog(this,TAG,"I","Last Fused location is Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());
             FileLogs.writeLogByDate(this,TAG,"I","Last Fused location is Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());
             SbLog.i(TAG,"Last Fused location is Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());
+            // check if user stay around after long time, so let see how user activity for next processing
+            if(isStayAround)
+                checkActivityToProcess();
         }else{
             FileLogs.writeLog(this,TAG,"I","Fused Location accuracy larger than "+DETECT_LOCATION_ACCURACY + " Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());
             FileLogs.writeLogByDate(this,TAG,"I","Fused Location accuracy larger than "+DETECT_LOCATION_ACCURACY + " Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());

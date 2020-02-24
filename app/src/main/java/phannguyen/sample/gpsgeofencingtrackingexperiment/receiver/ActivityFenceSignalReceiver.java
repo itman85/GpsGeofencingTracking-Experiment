@@ -49,7 +49,8 @@ public class ActivityFenceSignalReceiver extends BroadcastReceiver {
                     startLocationTrackingService(context);
                     break;
                 default:
-                    FileLogs.writeLog(context, TAG, "I", "User Move Fast Unknown");
+                    SbLog.i(TAG,"User Move Fast Unknown");
+                    //FileLogs.writeLog(context, TAG, "I", "User Move Fast Unknown");
                     //stopLocationTrackingService(context);
             }
             //Log.i(TAG,"Fence state: " + fenceStateStr);
@@ -63,7 +64,8 @@ public class ActivityFenceSignalReceiver extends BroadcastReceiver {
                     WorkManagerHelper.startActivityTriggerWorkerOnetimeRequest(context,INTERVAL_SLOW_MOVE_IN_MS/1000, ExistingWorkPolicy.REPLACE.ordinal());
                     break;
                 default:
-                    FileLogs.writeLog(context, TAG, "I", "User Move Slow Unknown");
+                    SbLog.i(TAG,"User Move Slow Unknown");
+                    //FileLogs.writeLog(context, TAG, "I", "User Move Slow Unknown");
                     //stopLocationTrackingService(context);
             }
         }else if(TextUtils.equals(fenceState.getFenceKey(), NOT_MOVE_ACTIVITY_FENCE_KEY)){
@@ -75,7 +77,8 @@ public class ActivityFenceSignalReceiver extends BroadcastReceiver {
                     WorkManagerHelper.startActivityTriggerWorkerOnetimeRequest(context,INTERVAL_SLOW_MOVE_IN_MS/1000, ExistingWorkPolicy.REPLACE.ordinal());
                     break;
                 default:
-                    FileLogs.writeLog(context, TAG, "I", "User Still Unknown");
+                    SbLog.i(TAG,"User Still Unknown");
+                    //FileLogs.writeLog(context, TAG, "I", "User Still Unknown");
                     //stopLocationTrackingService(context);
             }
         }

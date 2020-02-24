@@ -87,6 +87,13 @@ public class CoreDetectActivityJobService extends JobIntentService {
 
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        SbLog.i(TAG,"Core Detect Activity Destroy");
+        FileLogs.writeLog(this,TAG,"I","Destroy Core Detect Activity");
+    }
+
     private void startAlarmActivityTrigger(int delayInMs, int workPolicy){
         WorkManagerHelper.startActivityTriggerWorkerOnetimeRequest(this,delayInMs/1000, workPolicy);
     }
@@ -123,6 +130,7 @@ public class CoreDetectActivityJobService extends JobIntentService {
                             SbLog.i(TAG,"User move far from last location,so start tracking now");
                             FileLogs.writeLog(this,TAG,"I","User move far from last location,so start tracking now");
                             FileLogs.writeLogByDate(this,TAG,"I","User move far from last location,so start tracking now");
+                            // so start tracking location foreground service
                             ServiceHelper.startLocationRequestUpdateForegroundService(this,null);
                         }else{
                             FileLogs.writeLog(this,TAG,"I","User Probably moving around");
@@ -138,6 +146,7 @@ public class CoreDetectActivityJobService extends JobIntentService {
                         SbLog.i(TAG,"User Still,so stop tracking now");
                         FileLogs.writeLog(this,TAG,"I","User STILL now, stop tracking");
                         FileLogs.writeLogByDate(this,TAG,"I","User STILL now, stop tracking");
+                        //stop tracking location foreground service
                         ServiceHelper.stopLocationRequestUpdateForegroundService(this);
                     } else{
                         FileLogs.writeLog(this,TAG,"I","User NOT ON_FOOT now, keep tracking activity by interval worker trigger");

@@ -29,7 +29,7 @@ public class Constant {
 
     public static final int INTERVAL_SLOW_MOVE_IN_MS = 180*1000;//3min
 
-    public static final int STAY_DISTANCE_IN_MET = 30;//in this distance, device consider as not move
+    public static final int STAY_DISTANCE_IN_MET = 50;//in this distance, device consider as not move
 
     public static final int FAR_DISTANCE_IN_MET = 200;//in this distance, device consider as move far
 
@@ -42,6 +42,8 @@ public class Constant {
     public static final int STILL_CONFIDENCE = 90;
 
     public static final int ONFOOT_CONFIDENCE = 90;
+
+    public static final int FAST_MOVE_CONFIDENCE = 80;
 
     public static final int INTERVAL_CHECK_STILL_IN_MS = 3*60*1000;//3mins
 
