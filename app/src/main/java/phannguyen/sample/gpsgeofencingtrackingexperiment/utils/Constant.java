@@ -25,9 +25,15 @@ public class Constant {
 
     public static final int INTERVAL_MOVE_IN_MS = 5*60*1000;//5mins
 
+    public static final int INTERVAL_WALK_IN_MS = 5*60*1000;//5mins
+
     public static final int INTERVAL_VERY_SLOW_MOVE_IN_MS = 120*1000;//2mins
 
     public static final int INTERVAL_SLOW_MOVE_IN_MS = 180*1000;//3min
+
+    public static final int INTERVAL_STAY_LONG_IN_MS = 15*60*1000;//15min
+
+    public static final int INTERVAL_STAY_SHORT_IN_MS = 5*60*1000;//5min
 
     public static final int STAY_DISTANCE_IN_MET = 50;//in this distance, device consider as not move
 
@@ -38,6 +44,10 @@ public class Constant {
     public static long TIMEOUT_STAY_LOCATION = 5*60*1000;  /* 5 MINS USER stay a location in 5 mins consider as STILL*/
 
     public static long UPDATE_STILL_TIME = 60*60*1000;  /* 60 MINS user STILL then update location*/
+
+    public static long LONG_STAY_AROUND_TIME = 30*60*1000;  /* 30 MINS user stay and move around a place (house, workplace,...)*/
+
+    public static long SHORT_STAY_AROUND_TIME = 5*60*1000;  /* 5 MINS user stay and move around a place (house, workplace,...)*/
 
     public static final int STILL_CONFIDENCE = 90;
 
@@ -76,5 +86,9 @@ public class Constant {
         public String toString() {
             return text;
         }
+    }
+
+    public enum LOCATION_CHANGE{
+        STAYLONG,STAYSHORT,MOVINGSLOW,MOVING
     }
 }

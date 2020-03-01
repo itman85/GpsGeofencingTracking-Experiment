@@ -32,6 +32,7 @@ import phannguyen.sample.gpsgeofencingtrackingexperiment.MainActivity;
 import phannguyen.sample.gpsgeofencingtrackingexperiment.R;
 import phannguyen.sample.gpsgeofencingtrackingexperiment.helper.ServiceHelper;
 import phannguyen.sample.gpsgeofencingtrackingexperiment.storage.SharedPreferencesHandler;
+import phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant;
 import phannguyen.sample.gpsgeofencingtrackingexperiment.utils.FileLogs;
 import phannguyen.sample.gpsgeofencingtrackingexperiment.utils.SbLog;
 
@@ -199,12 +200,12 @@ public class LocationRequestUpdateForegroundService extends Service {
     private void onNewLocation(Location location) {
         //only accept location with accuracy less than DETECT_LOCATION_ACCURACY
         if (location != null && location.getAccuracy() < DETECT_LOCATION_ACCURACY) {
-            boolean isStayAround = CoreTrackingJobService.updateLastLocation(this,(float) location.getLatitude(),(float) location.getLongitude(),true);
+            Constant.LOCATION_CHANGE stayAround = CoreTrackingJobService.updateLastLocation(this,(float) location.getLatitude(),(float) location.getLongitude());
             FileLogs.writeLog(this,TAG,"I","Last Fused location is Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());
             FileLogs.writeLogByDate(this,TAG,"I","Last Fused location is Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());
             SbLog.i(TAG,"Last Fused location is Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());
             // check if user stay around after long time, so let see how user activity for next processing
-            if(isStayAround)
+            if(stayAround == Constant.LOCATION_CHANGE.STAYSHORT)
                 checkActivityToProcess();
         }else{
             FileLogs.writeLog(this,TAG,"I","Fused Location accuracy larger than "+DETECT_LOCATION_ACCURACY + " Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());

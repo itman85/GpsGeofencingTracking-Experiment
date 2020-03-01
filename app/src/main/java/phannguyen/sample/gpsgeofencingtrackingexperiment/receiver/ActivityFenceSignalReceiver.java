@@ -20,6 +20,7 @@ import phannguyen.sample.gpsgeofencingtrackingexperiment.utils.SbLog;
 import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.ACTIVITY_SIGNAL_RECEIVER_ACTION;
 import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.FAST_ACTIVITY_FENCE_KEY;
 import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.INTERVAL_SLOW_MOVE_IN_MS;
+import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.INTERVAL_WALK_IN_MS;
 import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.NOT_MOVE_ACTIVITY_FENCE_KEY;
 import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.SLOW_ACTIVITY_FENCE_KEY;
 
@@ -30,7 +31,6 @@ public class ActivityFenceSignalReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         SbLog.i(TAG, "Activity Fence onReceive");
         FileLogs.writeLog(context, TAG, "I", "Activity Fence Signal onReceive");
-        FileLogs.writeLogByDate(context, TAG, "I", "Activity Fence Signal onReceive");
         if (!TextUtils.equals(ACTIVITY_SIGNAL_RECEIVER_ACTION, intent.getAction())) {
             SbLog.i(TAG, "Received an unsupported action in ActivityFenceSignalReceiver: action="
                     + intent.getAction());
@@ -45,6 +45,7 @@ public class ActivityFenceSignalReceiver extends BroadcastReceiver {
                 case FenceState.TRUE:
                     SbLog.i(TAG,"User Move Fast in Vehicle");
                     FileLogs.writeLog(context, TAG, "I", "User Move Fast in Vehicle");
+                    FileLogs.writeLogByDate(context, TAG, "I", "User Move Fast in Vehicle");
                     // user move fast, so start tracking now
                     startLocationTrackingService(context);
                     break;
@@ -60,8 +61,9 @@ public class ActivityFenceSignalReceiver extends BroadcastReceiver {
                 case FenceState.TRUE:
                     SbLog.i(TAG,"User Slow Move");
                     FileLogs.writeLog(context, TAG, "I", "User Move Slow On Foot");
+                    FileLogs.writeLogByDate(context, TAG, "I", "User Move Slow On Foot");
                     // user move slow on foot, so let check after delay time
-                    WorkManagerHelper.startActivityTriggerWorkerOnetimeRequest(context,INTERVAL_SLOW_MOVE_IN_MS/1000, ExistingWorkPolicy.REPLACE.ordinal());
+                    WorkManagerHelper.startActivityTriggerWorkerOnetimeRequest(context,INTERVAL_WALK_IN_MS/1000, ExistingWorkPolicy.REPLACE.ordinal());
                     break;
                 default:
                     SbLog.i(TAG,"User Move Slow Unknown");
@@ -73,6 +75,7 @@ public class ActivityFenceSignalReceiver extends BroadcastReceiver {
                 case FenceState.TRUE:
                     SbLog.i(TAG,"User Still");
                     FileLogs.writeLog(context, TAG, "I", "User Still");
+                    FileLogs.writeLogByDate(context, TAG, "I", "User Still");
                     // user not move, so check activity after delay
                     WorkManagerHelper.startActivityTriggerWorkerOnetimeRequest(context,INTERVAL_SLOW_MOVE_IN_MS/1000, ExistingWorkPolicy.REPLACE.ordinal());
                     break;

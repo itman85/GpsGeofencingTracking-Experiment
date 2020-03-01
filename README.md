@@ -47,4 +47,14 @@ NOTE List
 3. Check location service có turn on ko? đây là 1 thông tin sẽ đc update lên server cho device status. vì khi ko lấy dc location cần
 báo cho user biết là device đã bị cố tình turn off location service. (họ sẽ phải turn on lại khi sài app nào cần location)
 
+S >F>V ok
+S>V>F > s? -> khi user đi tới lui trong bán kính 200m trong vòng 1h thì sẽ dừng track, vì trước sau gì user cung sẽ still
+F>S>V ok
+F>V>S  ok
+V>F>S ok
+V>S>F > s? user có thể still
+
+S > F -> track interval 2 mins 3 times để xem nếu vẫn trong khu vực around stay thì cancel
+F > F -> khi user on foot around trong 30' và vẫn tiếp tục on foot mà ko ngồi nghỉ ngơi phut nào !!!
+
 

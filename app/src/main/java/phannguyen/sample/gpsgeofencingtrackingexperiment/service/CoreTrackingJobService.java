@@ -24,6 +24,7 @@ import java.util.concurrent.CountDownLatch;
 import phannguyen.sample.gpsgeofencingtrackingexperiment.helper.ServiceHelper;
 import phannguyen.sample.gpsgeofencingtrackingexperiment.helper.WorkManagerHelper;
 import phannguyen.sample.gpsgeofencingtrackingexperiment.storage.SharedPreferencesHandler;
+import phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant;
 import phannguyen.sample.gpsgeofencingtrackingexperiment.utils.FileLogs;
 import phannguyen.sample.gpsgeofencingtrackingexperiment.utils.SbLog;
 
@@ -36,6 +37,8 @@ import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.I
 import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.INTERVAL_SLOW_MOVE_IN_MS;
 import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.INTERVAL_VERY_SLOW_MOVE_IN_MS;
 import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.LOCATION_RESULT_TAG;
+import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.LONG_STAY_AROUND_TIME;
+import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.SHORT_STAY_AROUND_TIME;
 import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.STAY_DISTANCE_IN_MET;
 import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.STILL_CONFIDENCE;
 import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.TIMEOUT_STAY_LOCATION;
@@ -173,12 +176,12 @@ public class CoreTrackingJobService extends JobIntentService {
             FileLogs.writeLogByDate(this,LOCATION_RESULT_TAG,"I","Save Location At Moving Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());
             //store location
             if(isSave)
-                updateLastLocation(this,(float) location.getLatitude(),(float) location.getLongitude(),false);
+                updateLastLocation(this,(float) location.getLatitude(),(float) location.getLongitude());
             //UtilsFn.saveLocation(location,this);
             //check if location request update still alive, then start alarm
             startAlarmLocationTrigger(INTERVAL_MOVE_IN_MS,ExistingWorkPolicy.KEEP.ordinal());
         }else{
-            long lastStayMoment = SharedPreferencesHandler.getLastMomentGPSNotChange(this);
+            long lastStayMoment = SharedPreferencesHandler.getLastMomentGPSChange(this);
             //check if user don't move for long time => user STILL
             if(System.currentTimeMillis() - lastStayMoment >= TIMEOUT_STAY_LOCATION){
                 SbLog.i(TAG,"***User Stay for long time Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());
@@ -227,42 +230,60 @@ public class CoreTrackingJobService extends JobIntentService {
         return distanceInMeters;
     }
 
-    public static boolean updateLastLocation(Context context,float lat,float lng, boolean checkToSave){
-        if(checkToSave){
+    /**
+     *
+     * @param context
+     * @param lat
+     * @param lng
+     * @return 0: stay around for long time, 1: stay around for awhile, 2: move
+     */
+    public static Constant.LOCATION_CHANGE updateLastLocation(Context context, float lat, float lng){
             float lastLng = SharedPreferencesHandler.getLastLngLocation(context);
             float lastLat = SharedPreferencesHandler.getLastLatLocation(context);
             if(lastLat == 0 || lastLng == 0){
                 SharedPreferencesHandler.setLastLatLocation(context, lat);
                 SharedPreferencesHandler.setLastLngLocation(context, lng);
-                SharedPreferencesHandler.setLastMomentGPSNotChange(context, System.currentTimeMillis());
+                SharedPreferencesHandler.setLastMomentGPSChange(context, System.currentTimeMillis());
+                SharedPreferencesHandler.setFirstMomentStayAround(context,false);
                 FileLogs.writeLog(context,"Result","I",lat + ","+lng);
-                return false;
+                return Constant.LOCATION_CHANGE.MOVING;
             }
             float distance = getMetersFromLatLong(lastLat,lastLng, lat, lng);
             //seem not move
             if(distance <= STAY_DISTANCE_IN_MET){
-                long lastStayMoment = SharedPreferencesHandler.getLastMomentGPSNotChange(context);
-                // update last location if user stay too long
-                if(System.currentTimeMillis() - lastStayMoment >= UPDATE_STILL_TIME){
-                    SharedPreferencesHandler.setLastLatLocation(context, lat);
-                    SharedPreferencesHandler.setLastLngLocation(context, lng);
-                    SharedPreferencesHandler.setLastMomentGPSNotChange(context, System.currentTimeMillis());
-                    FileLogs.writeLog(context,"Result","I",lat + ","+lng);
-                    return true;
+                SharedPreferencesHandler.setLastLatLocation(context, lat);
+                SharedPreferencesHandler.setLastLngLocation(context, lng);
+                long lastStayMoment = SharedPreferencesHandler.getLastMomentGPSChange(context);
+                //save first time moment of stay around
+                if(!SharedPreferencesHandler.isFirstMomentStayAround(context)){
+                    // save last stay long location
+                    SharedPreferencesHandler.setLastStayLatLocation(context, lat);
+                    SharedPreferencesHandler.setLastStayLngLocation(context, lng);
+                    SharedPreferencesHandler.setFirstMomentStayAround(context,true);
+                    SharedPreferencesHandler.setLastMomentGPSChange(context, System.currentTimeMillis());
+                }
+
+                long time = System.currentTimeMillis() - lastStayMoment;
+                // update last location if user stay or move around a place too long
+                if(time >= LONG_STAY_AROUND_TIME){
+                    //SharedPreferencesHandler.setLastMomentGPSNotChange(context, System.currentTimeMillis());
+                    FileLogs.writeLog(context,"Result","I"," User Stay Around Long @"+ lat + ","+lng);
+                    return Constant.LOCATION_CHANGE.STAYLONG;
+                }else if(time >= SHORT_STAY_AROUND_TIME) {
+                    FileLogs.writeLog(context,"Result","I"," User Stay Around Short @"+ lat + ","+lng);
+                    return Constant.LOCATION_CHANGE.STAYSHORT;
+                } else{
+                    FileLogs.writeLog(context,"Result","I"," User Going to Stay Around Short @"+ lat + ","+lng);
+                    return Constant.LOCATION_CHANGE.MOVINGSLOW;
                 }
             }else{
                 SharedPreferencesHandler.setLastLatLocation(context, lat);
                 SharedPreferencesHandler.setLastLngLocation(context, lng);
-                SharedPreferencesHandler.setLastMomentGPSNotChange(context, System.currentTimeMillis());
-                FileLogs.writeLog(context,"Result","I",lat + ","+lng);
+                SharedPreferencesHandler.setLastMomentGPSChange(context, System.currentTimeMillis());
+                SharedPreferencesHandler.setFirstMomentStayAround(context,false);
+                FileLogs.writeLog(context,"Result","I"," User Moving @"+lat + ","+lng);
+                return Constant.LOCATION_CHANGE.MOVING;
             }
-        }else {
-            SharedPreferencesHandler.setLastLatLocation(context, lat);
-            SharedPreferencesHandler.setLastLngLocation(context, lng);
-            SharedPreferencesHandler.setLastMomentGPSNotChange(context, System.currentTimeMillis());
-            FileLogs.writeLog(context,"Result","D",lat + ","+lng);
-        }
-        return false;
     }
 
     private void getSnapshotCurrentActivity(Context context, Location location){
@@ -294,7 +315,7 @@ public class CoreTrackingJobService extends JobIntentService {
                         //stop request update geo fencing service
                         //ModulePresenter.startGeofencingRequestUpdateService(context,bundle);
                         //
-                        updateLastLocation(context,(float) location.getLatitude(),(float) location.getLongitude(),false);
+                        updateLastLocation(context,(float) location.getLatitude(),(float) location.getLongitude());
                         //store location info local db
                         FileLogs.writeLog(context,LOCATION_RESULT_TAG,"I","Save Location At Still Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());
                         FileLogs.writeLogByDate(context,LOCATION_RESULT_TAG,"I","Save Location At Still Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());
