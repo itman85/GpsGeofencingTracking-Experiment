@@ -15,6 +15,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.provider.Settings;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -54,7 +55,6 @@ public class MainActivity extends AppCompatActivity {
             //
             //startActivity(new Intent(MainActivity.this,AwarenessActivity.class));
             //Toast.makeText(MainActivity.this,"This button disable processing",Toast.LENGTH_LONG).show();
-
         });
 
         Button registerBtn = findViewById(R.id.registerBtn);

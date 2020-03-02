@@ -35,6 +35,7 @@ import phannguyen.sample.gpsgeofencingtrackingexperiment.storage.SharedPreferenc
 import phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant;
 import phannguyen.sample.gpsgeofencingtrackingexperiment.utils.FileLogs;
 import phannguyen.sample.gpsgeofencingtrackingexperiment.utils.SbLog;
+import phannguyen.sample.gpsgeofencingtrackingexperiment.utils.TestUtils;
 
 import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.BUNDLE_EXTRA_LOCATION_RESULT;
 import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.BUNDLE_EXTRA_LOCATION_SOURCE;
@@ -70,7 +71,7 @@ public class LocationRequestUpdateForegroundService extends Service {
         // This service created and destroyed one time, onStartCommand will called multiple times
         // If service running, next call start will call onStartCommand
         SbLog.i(TAG,"Location Request Update Service initService");
-        FileLogs.writeLog(this,TAG,"I","Location Request Update Service initService");
+        FileLogs.writeLog(this,TAG,"I","Location Request Update Service initService @"+ TestUtils.getBatteryCapacity(this));
         FileLogs.writeLogByDate(this,TAG,"I","Location Request Update Service initService");
         serviceRunCount = 0;
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
@@ -170,7 +171,7 @@ public class LocationRequestUpdateForegroundService extends Service {
     public void onDestroy() {
         super.onDestroy();
         SbLog.i(TAG," Location Request Update Service Destroy");
-        FileLogs.writeLog(this,TAG,"I","*** Location Request Update Service Destroy");
+        FileLogs.writeLog(this,TAG,"I","*** Location Request Update Service Destroy @"+TestUtils.getBatteryCapacity(this));
         FileLogs.writeLogByDate(this,TAG,"I","*** Location Request Update Service Destroy");
         SharedPreferencesHandler.setLocationRequestUpdateStatus(this, false);
         removeLocationRequestUpdate();

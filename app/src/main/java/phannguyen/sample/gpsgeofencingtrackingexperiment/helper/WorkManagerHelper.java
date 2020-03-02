@@ -43,6 +43,7 @@ public class WorkManagerHelper {
     }
 
     public static void startLocationTriggerWorkerOnetimeRequest(Context context,int delayInSecond, int workPolicyVal){
+        FileLogs.writeLog(context,"WorkManagerHelper","I","start Location Trigger Worker One time Request");
         ExistingWorkPolicy workPolicy = ExistingWorkPolicy.REPLACE;//replace by new request
         switch (workPolicyVal){
             case 0:
@@ -64,6 +65,7 @@ public class WorkManagerHelper {
     }
 
     public static void startActivityTriggerWorkerOnetimeRequest(Context context,int delayInSecond, int workPolicyVal){
+        FileLogs.writeLog(context,"WorkManagerHelper","I","start Activity Trigger Worker One time Request");
         ExistingWorkPolicy workPolicy = ExistingWorkPolicy.REPLACE;//replace by new request
         switch (workPolicyVal){
             case 0:
