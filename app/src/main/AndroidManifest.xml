@@ -73,7 +73,8 @@
             android:name=".service.LocationRequestUpdateForegroundService"
             android:process=":location"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true"
+            android:foregroundServiceType="location"></service>
 
         <service
             android:name=".service.CoreDetectActivityJobService"
