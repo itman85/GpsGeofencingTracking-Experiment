@@ -44,6 +44,9 @@ import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.S
 import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.TIMEOUT_STAY_LOCATION;
 import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.UPDATE_STILL_TIME;
 
+/**
+ * UNUSED
+ */
 public class CoreTrackingJobService extends JobIntentService {
 
     private static final int JOB_ID = 1009;
@@ -237,7 +240,7 @@ public class CoreTrackingJobService extends JobIntentService {
      * @param lng
      * @return 0: stay around for long time, 1: stay around for awhile, 2: move
      */
-    public static Constant.LOCATION_CHANGE updateLastLocation(Context context, float lat, float lng){
+    private static Constant.LOCATION_CHANGE updateLastLocation(Context context, float lat, float lng){
             float lastLng = SharedPreferencesHandler.getLastLngLocation(context);
             float lastLat = SharedPreferencesHandler.getLastLatLocation(context);
             if(lastLat == 0 || lastLng == 0){

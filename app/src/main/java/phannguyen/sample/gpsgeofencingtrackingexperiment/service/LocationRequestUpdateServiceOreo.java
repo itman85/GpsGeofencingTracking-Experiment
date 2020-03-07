@@ -28,6 +28,7 @@ import java.util.concurrent.CountDownLatch;
 import phannguyen.sample.gpsgeofencingtrackingexperiment.helper.ServiceHelper;
 import phannguyen.sample.gpsgeofencingtrackingexperiment.storage.SharedPreferencesHandler;
 import phannguyen.sample.gpsgeofencingtrackingexperiment.utils.FileLogs;
+import phannguyen.sample.gpsgeofencingtrackingexperiment.utils.LocationUtils;
 import phannguyen.sample.gpsgeofencingtrackingexperiment.utils.SbLog;
 
 import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.BUNDLE_EXTRA_LOCATION_RESULT;
@@ -36,6 +37,9 @@ import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.D
 import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.FASTEST_INTERVAL;
 import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.UPDATE_INTERVAL;
 
+/**
+ * UNUSED, From android 8 will use foreground service while tracking location instead
+ */
 public class LocationRequestUpdateServiceOreo extends JobIntentService implements LocationListener {
     private static final int JOB_ID = 1008;
 
@@ -183,7 +187,7 @@ public class LocationRequestUpdateServiceOreo extends JobIntentService implement
     private void onNewLocation(Location location) {
         //only accept location with accuracy less than DETECT_LOCATION_ACCURACY
         if (location != null && location.getAccuracy() < DETECT_LOCATION_ACCURACY) {
-            CoreTrackingJobService.updateLastLocation(this,(float) location.getLatitude(),(float) location.getLongitude());
+            LocationUtils.updateLastLocation(this,(float) location.getLatitude(),(float) location.getLongitude());
             //FileLogs.writeLog(this,"Result","I",location.getLatitude() + ","+location.getLongitude());
             //let core tracking service process this location data
             Map<String,Object> bundle = new HashMap<>();

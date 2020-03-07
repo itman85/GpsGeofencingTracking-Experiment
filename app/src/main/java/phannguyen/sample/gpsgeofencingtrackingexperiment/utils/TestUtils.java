@@ -17,14 +17,8 @@ public class TestUtils {
         ServiceHelper.startLocationRequestUpdateService(context, bundle);
     }
 
-    public static void startLocationTrackingForegroundService(Context context) {
-        Map<String, Object> bundle = new HashMap<>();
-        bundle.put("action", "START");
-        ServiceHelper.startLocationRequestUpdateForegroundService(context, bundle);
-    }
-
-    public static void stopLocationTrackingForegroundService(Context context) {
-        ServiceHelper.stopLocationRequestUpdateForegroundService(context);
+    public static void stopLocationTrackingService(Context context) {
+        ServiceHelper.stopLocationRequestUpdateService(context);
     }
 
     public static long getBatteryCapacity(Context ctx) {

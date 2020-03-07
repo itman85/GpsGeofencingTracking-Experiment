@@ -14,22 +14,17 @@ import com.google.android.gms.location.DetectedActivity;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import phannguyen.sample.gpsgeofencingtrackingexperiment.helper.ServiceHelper;
 import phannguyen.sample.gpsgeofencingtrackingexperiment.helper.WorkManagerHelper;
 import phannguyen.sample.gpsgeofencingtrackingexperiment.storage.SharedPreferencesHandler;
-import phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant;
 import phannguyen.sample.gpsgeofencingtrackingexperiment.utils.FileLogs;
+import phannguyen.sample.gpsgeofencingtrackingexperiment.utils.LocationUtils;
 import phannguyen.sample.gpsgeofencingtrackingexperiment.utils.SbLog;
 
 import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.DETECT_LOCATION_ACCURACY;
 import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.ERROR_TAG;
 import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.FAR_DISTANCE_IN_MET;
 import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.INTERVAL_SLOW_MOVE_IN_MS;
-import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.INTERVAL_STAY_LONG_IN_MS;
-import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.INTERVAL_STAY_SHORT_IN_MS;
 import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.INTERVAL_VERY_SLOW_MOVE_IN_MS;
 import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.INTERVAL_WALK_IN_MS;
 import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.LOCATION_RESULT_TAG;
@@ -109,7 +104,7 @@ public class CoreDetectActivityJobService extends JobIntentService {
     }
 
     private void processLocationData(Location location){
-        CoreTrackingJobService.updateLastLocation(this,(float)location.getLatitude(),(float)location.getLongitude());
+        LocationUtils.updateLastLocation(this,(float)location.getLatitude(),(float)location.getLongitude());
         //FileLogs.writeLog(this,"Result","D",location.getLatitude() + ","+location.getLongitude());
         Awareness.getSnapshotClient(this).getDetectedActivity()
                 .addOnSuccessListener(dar -> {
@@ -128,14 +123,14 @@ public class CoreDetectActivityJobService extends JobIntentService {
                     //check if STILL now, so cancel tracking
                     if(probableActivity.getType() == DetectedActivity.ON_FOOT && confidence >= ONFOOT_CONFIDENCE){
                         //user on foot, so check if user move far from last stay location
-                        if(checkIfUserMoveFar(location)){
+                        if(LocationUtils.checkIfUserMoveFar(this,location)){
                             //cancel activity trigger worker
                             cancelActivityTriggerAlarm(this);
                             SbLog.i(TAG,"User move far from last location,so start tracking now");
                             FileLogs.writeLog(this,TAG,"I","User move far from last location,so start tracking now");
                             FileLogs.writeLogByDate(this,TAG,"I","User move far from last location,so start tracking now");
                             // so start tracking location foreground service
-                            ServiceHelper.startLocationRequestUpdateForegroundService(this,null);
+                            ServiceHelper.startLocationRequestUpdateService(this,null);
                         }else{
                             FileLogs.writeLog(this,TAG,"I","User Probably moving around");
                             FileLogs.writeLogByDate(this,TAG,"I","User Probably moving around");
@@ -152,7 +147,7 @@ public class CoreDetectActivityJobService extends JobIntentService {
                         FileLogs.writeLog(this, TAG, "I", "User STILL now, stop tracking");
                         FileLogs.writeLogByDate(this, TAG, "I", "User STILL now, stop tracking");
                         //stop tracking location foreground service
-                        ServiceHelper.stopLocationRequestUpdateForegroundService(this);
+                        ServiceHelper.stopLocationRequestUpdateService(this);
                     } else{
                         FileLogs.writeLog(this,TAG,"I","User NOT ON_FOOT or STILL now, keep tracking activity by interval worker trigger");
                         FileLogs.writeLogByDate(this,TAG,"I","User NOT ON_FOOT or STILL now, keep tracking activity by interval worker trigger");
@@ -167,36 +162,4 @@ public class CoreDetectActivityJobService extends JobIntentService {
                 });
     }
 
-    /**
-     * User on_foot but move far from last known location, so will track
-     * @param location
-     * @return
-     */
-    private boolean checkIfUserMoveFar(Location location){
-        float lastStayLng = SharedPreferencesHandler.getLastStayLngLocation(this);
-        float lastStayLat = SharedPreferencesHandler.getLastStayLatLocation(this);
-        if(lastStayLng==0||lastStayLat==0){
-            return true;
-        }else{
-            float distance = getMetersFromLatLong(lastStayLat,lastStayLng, (float) location.getLatitude(), (float) location.getLongitude());
-            //seem not move
-            if(distance <= FAR_DISTANCE_IN_MET){
-                return false;
-            }else{
-                //user move far
-                return true;
-            }
-        }
-    }
-
-    private static float getMetersFromLatLong(float lat1, float lng1, float lat2, float lng2){
-        Location loc1 = new Location("");
-        loc1.setLatitude(lat1);
-        loc1.setLongitude(lng1);
-        Location loc2 = new Location("");
-        loc2.setLatitude(lat2);
-        loc2.setLongitude(lng2);
-        float distanceInMeters = loc1.distanceTo(loc2);
-        return distanceInMeters;
-    }
 }

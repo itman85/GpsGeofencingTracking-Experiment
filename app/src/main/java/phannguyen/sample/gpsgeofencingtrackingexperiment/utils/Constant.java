@@ -49,7 +49,7 @@ public class Constant {
 
     public static long SHORT_STAY_AROUND_TIME = 5*60*1000;  /* 5 MINS user stay and move around a place (house, workplace,...)*/
 
-    public static final int STILL_CONFIDENCE = 90;
+    public static final int STILL_CONFIDENCE = 80;
 
     public static final int ONFOOT_CONFIDENCE = 90;
 

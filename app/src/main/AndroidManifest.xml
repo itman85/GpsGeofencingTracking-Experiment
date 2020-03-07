@@ -76,11 +76,23 @@
             android:exported="true"
             android:foregroundServiceType="location"></service>
 
+        <service android:name=".service.LocationRequestUpdateBackgroundService"
+            android:process=":location"
+            android:exported="false"/>
+
         <service
             android:name=".service.CoreDetectActivityJobService"
             android:exported="false"
             android:process=":location"
             android:permission="android.permission.BIND_JOB_SERVICE" />
+
+        <service android:name=".notification.SbNotificationListenerService"
+            android:label="SbNotificationListenerService"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService" />
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>

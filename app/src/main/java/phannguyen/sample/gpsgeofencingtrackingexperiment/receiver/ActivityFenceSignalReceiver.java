@@ -93,14 +93,14 @@ public class ActivityFenceSignalReceiver extends BroadcastReceiver {
         FileLogs.writeLogByDate(context, TAG, "I", "USER MOVE FAST SIGNAL - Start Location&Geofencing Request Update Service");
         Map<String, Object> bundle = new HashMap<>();
         bundle.put("action", "START");
-        ServiceHelper.startLocationRequestUpdateForegroundService(context, bundle);
+        ServiceHelper.startLocationRequestUpdateService(context, bundle);
     }
 
     private void stopLocationTrackingService(Context context) {
         SbLog.i(TAG, "USER NOT MOVE SIGNAL");
         FileLogs.writeLog(context, TAG, "I", "USER NOT MOVE SIGNAL");
         FileLogs.writeLogByDate(context, TAG, "I", "USER NOT MOVE SIGNAL");
-        ServiceHelper.stopLocationRequestUpdateForegroundService(context);
+        ServiceHelper.stopLocationRequestUpdateService(context);
         //let core location tracking decide to stop tracking or not
         //WorkManagerHelper.startLocationTriggerWorkerOnetimeRequest(context,INTERVAL_VERY_SLOW_MOVE_IN_MS/1000, ExistingWorkPolicy.REPLACE.ordinal());
 

@@ -28,6 +28,7 @@ import java.util.Map;
 import phannguyen.sample.gpsgeofencingtrackingexperiment.helper.ServiceHelper;
 import phannguyen.sample.gpsgeofencingtrackingexperiment.storage.SharedPreferencesHandler;
 import phannguyen.sample.gpsgeofencingtrackingexperiment.utils.FileLogs;
+import phannguyen.sample.gpsgeofencingtrackingexperiment.utils.LocationUtils;
 import phannguyen.sample.gpsgeofencingtrackingexperiment.utils.SbLog;
 
 import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.BUNDLE_EXTRA_LOCATION_RESULT;
@@ -38,7 +39,10 @@ import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.I
 import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.STAY_DISTANCE_IN_MET;
 import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.UPDATE_INTERVAL;
 
-public class LocationRequestUpdateService extends Service implements LocationListener {
+/**
+ * UNUSED, This service used in android 7-
+ */
+public class LocationRequestUpdateService extends Service {
 
     private static final String TAG = "LocationRequestUpdateService";
 
@@ -150,7 +154,7 @@ public class LocationRequestUpdateService extends Service implements LocationLis
     private void onNewLocation(Location location) {
         //only accept location with accuracy less than DETECT_LOCATION_ACCURACY
         if (location != null && location.getAccuracy() < DETECT_LOCATION_ACCURACY) {
-            CoreTrackingJobService.updateLastLocation(this,(float) location.getLatitude(),(float) location.getLongitude());
+            LocationUtils.updateLastLocation(this,(float) location.getLatitude(),(float) location.getLongitude());
             //let core tracking service process this location data
             Map<String,Object> bundle = new HashMap<>();
             bundle.put(BUNDLE_EXTRA_LOCATION_RESULT, location);
@@ -170,39 +174,5 @@ public class LocationRequestUpdateService extends Service implements LocationLis
     }
 
     ////////////////////////////////////////////
-    @Override
-    public void onLocationChanged(Location location) {
-        //only accept location with accuracy less than DETECT_LOCATION_ACCURACY
-        if (location != null && location.getAccuracy() < DETECT_LOCATION_ACCURACY) {
-            //let core tracking service process this location data
-            Map<String,Object> bundle = new HashMap<>();
-            bundle.put(BUNDLE_EXTRA_LOCATION_RESULT, location);
-            bundle.put(BUNDLE_EXTRA_LOCATION_SOURCE, locationProvider);
-            ServiceHelper.startCoreLocationTrackingJobService(this,bundle);
-            // use the Location
-            //Log.i(TAG,"***Last location is Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());
-            FileLogs.writeLog(this,TAG,"I","Last "+ locationProvider +" Provider location is Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());
-            FileLogs.writeLogByDate(this,TAG,"I","Last "+ locationProvider +" Provider location is Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());
-            SbLog.i(TAG,"Last "+ locationProvider +" Provider location is Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());
-        }else{
-            FileLogs.writeLog(this,TAG,"I",locationProvider + " Provider Location accuracy larger than "+ DETECT_LOCATION_ACCURACY + " Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());
-            FileLogs.writeLogByDate(this,TAG,"I",locationProvider + " Provider Location accuracy larger than "+ DETECT_LOCATION_ACCURACY + " Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());
-            SbLog.i(TAG,locationProvider + " Provider Location accuracy larger than "+ DETECT_LOCATION_ACCURACY + " Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());
-        }
-    }
 
-    @Override
-    public void onStatusChanged(String s, int i, Bundle bundle) {
-
-    }
-
-    @Override
-    public void onProviderEnabled(String s) {
-
-    }
-
-    @Override
-    public void onProviderDisabled(String s) {
-
-    }
 }

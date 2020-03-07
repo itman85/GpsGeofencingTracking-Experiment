@@ -1,5 +1,6 @@
 package phannguyen.sample.gpsgeofencingtrackingexperiment;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -23,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import phannguyen.sample.gpsgeofencingtrackingexperiment.helper.WorkManagerHelper;
+import phannguyen.sample.gpsgeofencingtrackingexperiment.notification.NotiHelper;
 import phannguyen.sample.gpsgeofencingtrackingexperiment.receiver.ScreenStateReceiver;
 import phannguyen.sample.gpsgeofencingtrackingexperiment.service.RegisterTriggerService;
 import phannguyen.sample.gpsgeofencingtrackingexperiment.utils.TestUtils;
@@ -32,6 +34,7 @@ import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 public class MainActivity extends AppCompatActivity {
 
     private static final int MY_PERMISSIONS_REQUEST_LOCATION = 123;
+    private static final int NOTI_LISTENER_REQUEST_CODE = 101;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,13 +44,12 @@ public class MainActivity extends AppCompatActivity {
         startBtn.setOnClickListener(v -> {
             WorkManagerHelper.startOneTimeRegisterUserActivityForTrackingLocationWorker(MainActivity.this,0,5);
             //TestUtils.startLocationTrackingService(MainActivity.this);
-            //TestUtils.startLocationTrackingForegroundService(MainActivity.this);
         });
 
         Button stopBtn = findViewById(R.id.stopBtn);
         stopBtn.setOnClickListener(v -> {
            // throw new RuntimeException("Test Crash"); // Force a crash
-            TestUtils.stopLocationTrackingForegroundService(MainActivity.this);
+            TestUtils.stopLocationTrackingService(MainActivity.this);
         });
 
         Button awareBtn = findViewById(R.id.awarenessBtn);
@@ -77,6 +79,13 @@ public class MainActivity extends AppCompatActivity {
                 }
             }else{
                 Toast.makeText(MainActivity.this,"Only support from android 6",Toast.LENGTH_LONG).show();
+            }
+        });
+
+        Button notiBtn = findViewById(R.id.notiBtn);
+        notiBtn.setOnClickListener(v -> {
+            if (!NotiHelper.isNotificationServiceEnabled(this)) {
+                requestNotificationListenerService();
             }
         });
 
@@ -132,8 +141,28 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    private void requestNotificationListenerService() {
+        String notificationListenerSettings = "android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS";
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+            notificationListenerSettings = Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS;
+        }
+
+        Intent intent = new Intent(notificationListenerSettings);
+        startActivityForResult(intent, NOTI_LISTENER_REQUEST_CODE);
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == NOTI_LISTENER_REQUEST_CODE) {
+            if (!NotiHelper.isNotificationServiceEnabled(this)) {
+                requestNotificationListenerService();
+            }
+        }
     }
 }

@@ -1,10 +1,6 @@
 package phannguyen.sample.gpsgeofencingtrackingexperiment.service;
 
 import android.annotation.SuppressLint;
-import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.location.Location;
@@ -13,7 +9,6 @@ import android.os.HandlerThread;
 import android.os.IBinder;
 
 import androidx.annotation.Nullable;
-import androidx.core.app.NotificationCompat;
 
 import com.google.android.gms.awareness.Awareness;
 import com.google.android.gms.location.ActivityRecognitionResult;
@@ -24,8 +19,6 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 
-import phannguyen.sample.gpsgeofencingtrackingexperiment.MainActivity;
-import phannguyen.sample.gpsgeofencingtrackingexperiment.R;
 import phannguyen.sample.gpsgeofencingtrackingexperiment.storage.SharedPreferencesHandler;
 import phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant;
 import phannguyen.sample.gpsgeofencingtrackingexperiment.utils.FileLogs;
@@ -40,11 +33,10 @@ import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.F
 import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.UPDATE_INTERVAL;
 
 /**
- * This service will be used in android 8+
+ * This service will be used in android 7-
  */
-public class LocationRequestUpdateForegroundService extends Service {
-    public static final String CHANNEL_ID = "ForegroundServiceChannel";
-    private static final String TAG = "LocationRequestUpdateFgSrvOreo";
+public class LocationRequestUpdateBackgroundService extends Service {
+    private static final String TAG = "LocationRequestUpdateBgSrvOreo";
 
     private FusedLocationProviderClient mFusedLocationClient;
     private LocationRequest mLocationRequest;
@@ -94,21 +86,6 @@ public class LocationRequestUpdateForegroundService extends Service {
         SbLog.i(TAG,"Location Request Update Service handleStartCommand");
         FileLogs.writeLog(this,TAG,"I","*** Location Request Update Service handleStartCommand");
         FileLogs.writeLogByDate(this,TAG,"I","*** Location Request Update Service handleStartCommand");
-        // todo think about fake or make sense notification
-        String input = intent.getStringExtra("inputExtra");
-        createNotificationChannel();
-        Intent notificationIntent = new Intent(this, MainActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this,
-                0, notificationIntent, 0);
-        Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setContentTitle("SB Test Foreground Service")
-                .setContentText(input)
-                .setSmallIcon(R.drawable.ic_launcher_foreground)
-                .setContentIntent(pendingIntent)
-                .build();
-        // must call startForeground after service created within 5s
-        // https://stackoverflow.com/questions/44425584/context-startforegroundservice-did-not-then-call-service-startforeground
-        startForeground(1, notification);// todo id?
         //do heavy work on a background thread
         // request update location
         mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, mWorkerThread.getLooper());
@@ -179,18 +156,6 @@ public class LocationRequestUpdateForegroundService extends Service {
             mWorkerThread.quit();
     }
 
-    private void createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel serviceChannel = new NotificationChannel(
-                    CHANNEL_ID,
-                    "Foreground Service Channel",
-                    NotificationManager.IMPORTANCE_LOW
-            );
-            NotificationManager manager = getSystemService(NotificationManager.class);
-            manager.createNotificationChannel(serviceChannel);
-        }
-    }
-
     private void onNewLocation(Location location) {
         //only accept location with accuracy less than DETECT_LOCATION_ACCURACY
         if (location != null && location.getAccuracy() < DETECT_LOCATION_ACCURACY) {
@@ -207,7 +172,5 @@ public class LocationRequestUpdateForegroundService extends Service {
             SbLog.i(TAG,"Fused Location accuracy larger than "+DETECT_LOCATION_ACCURACY + " Lat = "+location.getLatitude() + " - Lng= "+location.getLongitude());
         }
     }
-
-
 
 }
