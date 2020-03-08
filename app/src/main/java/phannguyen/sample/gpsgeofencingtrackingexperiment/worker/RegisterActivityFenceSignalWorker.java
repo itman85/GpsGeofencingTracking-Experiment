@@ -115,32 +115,5 @@ public class RegisterActivityFenceSignalWorker extends Worker {
                 });
     }
 
-    // query fence if not existed,so re-register
-    protected void queryFence(final String fenceKey) {
-        Awareness.getFenceClient(this.getApplicationContext())
-                .queryFences(FenceQueryRequest.forFences(Arrays.asList(fenceKey)))
-                .addOnSuccessListener(new OnSuccessListener<FenceQueryResponse>() {
-                    @Override
-                    public void onSuccess(FenceQueryResponse response) {
-                        FenceStateMap map = response.getFenceStateMap();
-                        for (String fenceKey : map.getFenceKeys()) {
-                            FenceState fenceState = map.getFenceState(fenceKey);
-                            Log.i(TAG, "Fence " + fenceKey + ": "
-                                    + fenceState.getCurrentState()
-                                    + ", was="
-                                    + fenceState.getPreviousState()
-                                    + ", lastUpdateTime="
-                                    + DATE_FORMAT.format(
-                                    String.valueOf(new Date(fenceState.getLastFenceUpdateTimeMillis()))));
-                        }
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.e(TAG, "Could not query fence: " + fenceKey);
-                        return;
-                    }
-                });
-    }
+
 }

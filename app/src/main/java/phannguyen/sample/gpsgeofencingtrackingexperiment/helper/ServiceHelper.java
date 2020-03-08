@@ -1,5 +1,6 @@
 package phannguyen.sample.gpsgeofencingtrackingexperiment.helper;
 
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
@@ -112,5 +113,24 @@ public class ServiceHelper {
             }
         }
         CoreDetectActivityJobService.enqueueWork(context,serviceIntent);
+    }
+
+    /**
+     * Returns true if this is a foreground service.
+     *
+     * @param context The {@link Context}.
+     */
+    public boolean serviceIsRunningInForeground(Context context) {
+        ActivityManager manager = (ActivityManager) context.getSystemService(
+                Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(
+                Integer.MAX_VALUE)) {
+            if (getClass().getName().equals(service.service.getClassName())) {
+                if (service.foreground) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

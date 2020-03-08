@@ -15,6 +15,7 @@ import phannguyen.sample.gpsgeofencingtrackingexperiment.utils.SbLog;
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class SbNotificationListenerService extends NotificationListenerService {
     public static String TAG = "Notifications";
+    public static String TAG1 = "NotificationMe";
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
@@ -30,7 +31,12 @@ public class SbNotificationListenerService extends NotificationListenerService {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             if (NotiHelper.isAppInvolvedInSystemNotification(getApplicationContext(), sbn.getNotification())) {
-                FileLogs.writeLog(getApplicationContext(), TAG, "I","***This notification about the app, so cancel it");
+                FileLogs.writeLog(getApplicationContext(), TAG1, "I","***This notification about the app, so cancel it");
+                FileLogs.writeLog(getApplicationContext(), TAG1, "I","Notification Posted by:" + sbn.getPackageName());
+                FileLogs.writeLog(getApplicationContext(), TAG1, "I","Notification ID:" + sbn.getId());
+                FileLogs.writeLog(getApplicationContext(), TAG1, "I","Notification Title:"+ sbn.getNotification().extras.getString(Notification.EXTRA_TITLE));
+                FileLogs.writeLog(getApplicationContext(), TAG1, "I","Notification Title Big:"+ sbn.getNotification().extras.getString(Notification.EXTRA_TITLE_BIG));
+                FileLogs.writeLog(getApplicationContext(), TAG1, "I","Notification Content:"+ sbn.getNotification().extras.getString(Notification.EXTRA_TEXT));
                 cancelNotification(sbn.getKey());
             }
         }

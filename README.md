@@ -9,6 +9,10 @@ https://stackoverflow.com/questions/40142331/how-to-request-location-permission-
 
 [geofencing] https://developer.android.com/training/location/geofencing
 
+https://medium.com/@christopherney/notification-listener-service-vulnerability-8d0c586f88d5
+
+https://github.com/android/location-samples
+
 Android code search
 
 1. Permission Controller:

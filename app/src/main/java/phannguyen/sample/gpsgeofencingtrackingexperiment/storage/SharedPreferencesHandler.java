@@ -90,4 +90,16 @@ public class SharedPreferencesHandler {
         editor.putFloat("last_stay_lat", lat);
         editor.apply();
     }
+
+    public static long getLastTimeCheckRegisterActivity(Context context) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+        return sharedPreferences.getLong("registeractivitylasttimechecking", 0);
+    }
+
+    public static void setLastTimeCheckRegisterActivity(Context context, long time) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putLong("registeractivitylasttimechecking", time);
+        editor.apply();
+    }
 }

@@ -57,6 +57,8 @@ public class Constant {
 
     public static final int INTERVAL_CHECK_STILL_IN_MS = 3*60*1000;//3mins
 
+    public static final int TIME_PERIOD_TO_CHECK_REGISTER_ACTIVITY_IN_SECOND = 12*60*60; // 12h
+
     public static final String BUNDLE_EXTRA_LOCATION_RESULT = "com.google.android.gms.location.EXTRA_LOCATION_RESULT";
 
     public static final String BUNDLE_EXTRA_LOCATION_SOURCE = "EXTRA_LOCATION_SOURCE";
