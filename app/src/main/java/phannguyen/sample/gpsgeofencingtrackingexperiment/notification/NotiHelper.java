@@ -11,6 +11,8 @@ import android.text.TextUtils;
 import phannguyen.sample.gpsgeofencingtrackingexperiment.R;
 
 public class NotiHelper {
+    private static final int APP_NAME_LIMIT_LENGTH = 15;
+
     public static boolean isNotificationServiceEnabled(Context context){
         String pkgName = context.getPackageName();
         final String flat = Settings.Secure.getString(context.getContentResolver(),
@@ -33,6 +35,9 @@ public class NotiHelper {
         if (notification != null) {
             CharSequence tickerText = notification.tickerText;
             String appName = context.getString(R.string.app_name);
+            if (appName.length() > APP_NAME_LIMIT_LENGTH) {
+                appName = appName.substring(0, APP_NAME_LIMIT_LENGTH);
+            }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                 String title1 = null, title2 = null, content = null;
                 Bundle extras = notification.extras;
