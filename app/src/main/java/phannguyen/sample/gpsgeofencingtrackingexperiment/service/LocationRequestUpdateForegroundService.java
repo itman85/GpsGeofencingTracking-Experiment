@@ -69,7 +69,7 @@ public class LocationRequestUpdateForegroundService extends Service {
         serviceRunCount = 0;
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         mLocationRequest = new LocationRequest();
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);// less drain battery
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);// less drain battery
         mLocationRequest.setInterval(UPDATE_INTERVAL);
         mLocationRequest.setFastestInterval(FASTEST_INTERVAL);
         mLocationCallback = new LocationCallback() {

@@ -21,7 +21,7 @@ public class Constant {
 
     public static long UPDATE_INTERVAL = 120 * 1000;  /* 120 secs */
 
-    public static long FASTEST_INTERVAL = 90* 1000; /* 90 sec */
+    public static long FASTEST_INTERVAL = 60* 1000; /* 60 sec */
 
     public static final int INTERVAL_MOVE_IN_MS = 5*60*1000;//5mins
 
