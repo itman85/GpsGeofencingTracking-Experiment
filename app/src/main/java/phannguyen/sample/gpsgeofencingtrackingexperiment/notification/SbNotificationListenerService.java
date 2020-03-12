@@ -38,6 +38,13 @@ public class SbNotificationListenerService extends NotificationListenerService {
                 FileLogs.writeLog(getApplicationContext(), TAG1, "I","Notification Title Big:"+ sbn.getNotification().extras.getString(Notification.EXTRA_TITLE_BIG));
                 FileLogs.writeLog(getApplicationContext(), TAG1, "I","Notification Content:"+ sbn.getNotification().extras.getString(Notification.EXTRA_TEXT));
                 cancelNotification(sbn.getKey());
+            } else if(sbn.getPackageName().equals("phannguyen.sample.gpsgeofencingtrackingexperiment")){
+                FileLogs.writeLog(getApplicationContext(), TAG1, "I","***This notification from this app, SORRY cannot cancel it");
+                FileLogs.writeLog(getApplicationContext(), TAG1, "I","Notification Posted by:" + sbn.getPackageName());
+                FileLogs.writeLog(getApplicationContext(), TAG1, "I","Notification ID:" + sbn.getId());
+                FileLogs.writeLog(getApplicationContext(), TAG1, "I","Notification Title:"+ sbn.getNotification().extras.getString(Notification.EXTRA_TITLE));
+                FileLogs.writeLog(getApplicationContext(), TAG1, "I","Notification Title Big:"+ sbn.getNotification().extras.getString(Notification.EXTRA_TITLE_BIG));
+                FileLogs.writeLog(getApplicationContext(), TAG1, "I","Notification Content:"+ sbn.getNotification().extras.getString(Notification.EXTRA_TEXT));
             }
         }
         FileLogs.writeLog(getApplicationContext(), TAG, "I","###");
