@@ -25,9 +25,11 @@ public class SbNotificationListenerService extends NotificationListenerService {
 
         FileLogs.writeLog(getApplicationContext(), TAG, "I","Notification Posted by:" + sbn.getPackageName());
         FileLogs.writeLog(getApplicationContext(), TAG, "I","Notification ID:" + sbn.getId());
+        // todo java.lang.ClassCastException: android.text.SpannableString cannot be cast to java.lang.String
         FileLogs.writeLog(getApplicationContext(), TAG, "I","Notification Title:"+ NotiHelper.getTextFromNotification(sbn.getNotification().extras, Notification.EXTRA_TITLE));
         FileLogs.writeLog(getApplicationContext(), TAG, "I","Notification Title Big:"+ NotiHelper.getTextFromNotification(sbn.getNotification().extras, Notification.EXTRA_TITLE_BIG));
         FileLogs.writeLog(getApplicationContext(), TAG, "I","Notification Content:"+ NotiHelper.getTextFromNotification(sbn.getNotification().extras, Notification.EXTRA_TEXT));
+
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             if (NotiHelper.isAppInvolvedInSystemNotification(getApplicationContext(), sbn.getNotification())) {
@@ -39,6 +41,14 @@ public class SbNotificationListenerService extends NotificationListenerService {
                 FileLogs.writeLog(getApplicationContext(), TAG, "I","Notification Content:"+ NotiHelper.getTextFromNotification(sbn.getNotification().extras, Notification.EXTRA_TEXT));
 
                 cancelNotification(sbn.getKey());
+            } else if(sbn.getPackageName().equals("phannguyen.sample.gpsgeofencingtrackingexperiment")){
+                FileLogs.writeLog(getApplicationContext(), TAG1, "I","***This notification from this app, SORRY cannot cancel it");
+                FileLogs.writeLog(getApplicationContext(), TAG1, "I","Notification Posted by:" + sbn.getPackageName());
+                FileLogs.writeLog(getApplicationContext(), TAG1, "I","Notification ID:" + sbn.getId());
+                FileLogs.writeLog(getApplicationContext(), TAG, "I","Notification Title:"+ NotiHelper.getTextFromNotification(sbn.getNotification().extras, Notification.EXTRA_TITLE));
+                FileLogs.writeLog(getApplicationContext(), TAG, "I","Notification Title Big:"+ NotiHelper.getTextFromNotification(sbn.getNotification().extras, Notification.EXTRA_TITLE_BIG));
+                FileLogs.writeLog(getApplicationContext(), TAG, "I","Notification Content:"+ NotiHelper.getTextFromNotification(sbn.getNotification().extras, Notification.EXTRA_TEXT));
+
             }
         }
         FileLogs.writeLog(getApplicationContext(), TAG, "I","###");
