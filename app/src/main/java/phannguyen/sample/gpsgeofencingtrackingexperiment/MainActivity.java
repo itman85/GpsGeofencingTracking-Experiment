@@ -92,6 +92,12 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        Button geofencing = findViewById(R.id.geofencingBtn);
+        geofencing.setOnClickListener(v -> {
+            // start register geo fencing service (only need to register one time)
+            TestUtils.startGeofencingTrackingService(MainActivity.this);
+        });
+
         askPermission();
 
     }

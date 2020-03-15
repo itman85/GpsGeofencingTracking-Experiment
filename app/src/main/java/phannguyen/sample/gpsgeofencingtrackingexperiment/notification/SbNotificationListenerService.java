@@ -25,6 +25,7 @@ public class SbNotificationListenerService extends NotificationListenerService {
 
         FileLogs.writeLog(getApplicationContext(), TAG, "I","Notification Posted by:" + sbn.getPackageName());
         FileLogs.writeLog(getApplicationContext(), TAG, "I","Notification ID:" + sbn.getId());
+        // todo java.lang.ClassCastException: android.text.SpannableString cannot be cast to java.lang.String
         FileLogs.writeLog(getApplicationContext(), TAG, "I","Notification Title:"+ sbn.getNotification().extras.getString(Notification.EXTRA_TITLE));
         FileLogs.writeLog(getApplicationContext(), TAG, "I","Notification Title Big:"+ sbn.getNotification().extras.getString(Notification.EXTRA_TITLE_BIG));
         FileLogs.writeLog(getApplicationContext(), TAG, "I","Notification Content:"+ sbn.getNotification().extras.getString(Notification.EXTRA_TEXT));

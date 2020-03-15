@@ -72,7 +72,14 @@ public class Constant {
     public static final String ACTIVITY_TRACKING_INTERVAL_WORKER_UNIQUE_NAME  = "activity_tracking_interval_worker_unique_name";
 
     public static final String LOCATION_RESULT_TAG = "LocationResult";
+
     public static final String ERROR_TAG = "Error";
+
+    public static final String KEY_REMOVE_LIST = "remove";
+
+    public static final String KEY_ADD_NEW_LIST = "add_new";
+
+    public static final String GEO_ID_PLIT_CHAR = "_";
 
     public enum SIGNAL {
         MOVE("MOVE");

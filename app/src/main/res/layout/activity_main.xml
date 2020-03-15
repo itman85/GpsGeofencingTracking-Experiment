@@ -21,7 +21,7 @@
             android:id="@+id/startBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Start Track Activities"/>
+            android:text="Start Track Activities(5)"/>
 
         <Button
             android:id="@+id/stopBtn"
@@ -39,19 +39,25 @@
             android:id="@+id/registerBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Register Service"/>
+            android:text="Register Service(1)"/>
 
         <Button
             android:id="@+id/ignoreBatteryBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Ignore Battery"/>
+            android:text="Ignore Battery(2)"/>
 
         <Button
             android:id="@+id/notiBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Request Access Notification"/>
+            android:text="Request Access Notification(3)"/>
+
+        <Button
+            android:id="@+id/geofencingBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Register GeoFencing(4)"/>
     </LinearLayout>
 
 

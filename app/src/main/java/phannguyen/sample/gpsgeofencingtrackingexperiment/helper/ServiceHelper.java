@@ -10,6 +10,7 @@ import androidx.core.content.ContextCompat;
 
 import java.util.Map;
 
+import phannguyen.sample.gpsgeofencingtrackingexperiment.geofencing.GeofencingRequestUpdateService;
 import phannguyen.sample.gpsgeofencingtrackingexperiment.service.CoreDetectActivityJobService;
 import phannguyen.sample.gpsgeofencingtrackingexperiment.service.CoreTrackingJobService;
 import phannguyen.sample.gpsgeofencingtrackingexperiment.service.LocationRequestUpdateBackgroundService;
@@ -132,5 +133,38 @@ public class ServiceHelper {
             }
         }
         return false;
+    }
+
+    public static void startGeofencingnRequestUpdateService(Context context, Map<String, Object> bundle){
+        // Start normal service in bg only allow in android 7-
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            Intent serviceIntent = new Intent(context, GeofencingRequestUpdateService.class);
+            if (bundle != null) {
+                for (String key : bundle.keySet()) {
+                    if (bundle.get(key) instanceof String)
+                        serviceIntent.putExtra(key, (String) bundle.get(key));
+                    else if (bundle.get(key) instanceof Boolean)
+                        serviceIntent.putExtra(key, (Boolean) bundle.get(key));
+                    else if (bundle.get(key) instanceof Integer)
+                        serviceIntent.putExtra(key, (Integer) bundle.get(key));
+                }
+            }
+            context.startService(serviceIntent);
+        }else{
+            // from android 8+ will start foreground service
+            Intent serviceIntent = new Intent(context, GeofencingRequestUpdateService.class);
+            if (bundle != null) {
+                for (String key : bundle.keySet()) {
+                    if (bundle.get(key) instanceof String)
+                        serviceIntent.putExtra(key, (String) bundle.get(key));
+                    else if (bundle.get(key) instanceof Boolean)
+                        serviceIntent.putExtra(key, (Boolean) bundle.get(key));
+                    else if (bundle.get(key) instanceof Integer)
+                        serviceIntent.putExtra(key, (Integer) bundle.get(key));
+                }
+            }
+            //ContextCompat.startForegroundService(context, serviceIntent);
+            context.startService(serviceIntent);
+        }
     }
 }
