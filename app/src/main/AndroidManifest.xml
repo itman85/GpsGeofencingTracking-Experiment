@@ -124,6 +124,11 @@
         <service android:name=".geofencing.GeofencingRequestUpdateService"
             android:process=":trackinggeo"
             android:stopWithTask="false" />
+        <service
+            android:name=".geofencing.GeofencingRequestUpdateJobIntentService"
+            android:process=":trackinggeo"
+            android:exported="true"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
     </application>
 
 </manifest>

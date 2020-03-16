@@ -10,6 +10,7 @@ import androidx.core.content.ContextCompat;
 
 import java.util.Map;
 
+import phannguyen.sample.gpsgeofencingtrackingexperiment.geofencing.GeofencingRequestUpdateJobIntentService;
 import phannguyen.sample.gpsgeofencingtrackingexperiment.geofencing.GeofencingRequestUpdateService;
 import phannguyen.sample.gpsgeofencingtrackingexperiment.service.CoreDetectActivityJobService;
 import phannguyen.sample.gpsgeofencingtrackingexperiment.service.CoreTrackingJobService;
@@ -151,8 +152,8 @@ public class ServiceHelper {
             }
             context.startService(serviceIntent);
         }else{
-            // from android 8+ will start foreground service
-            Intent serviceIntent = new Intent(context, GeofencingRequestUpdateService.class);
+            // from android 8+ will enqueue job intent service
+            Intent serviceIntent = new Intent(context, GeofencingRequestUpdateJobIntentService.class);
             if (bundle != null) {
                 for (String key : bundle.keySet()) {
                     if (bundle.get(key) instanceof String)
@@ -163,8 +164,7 @@ public class ServiceHelper {
                         serviceIntent.putExtra(key, (Integer) bundle.get(key));
                 }
             }
-            //ContextCompat.startForegroundService(context, serviceIntent);
-            context.startService(serviceIntent);
+            GeofencingRequestUpdateJobIntentService.enqueueWork(context,serviceIntent);
         }
     }
 }
