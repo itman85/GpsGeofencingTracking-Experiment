@@ -19,9 +19,9 @@ public class Constant {
 
     public static final String SIGNAL_KEY  = "signal";
 
-    public static long UPDATE_INTERVAL = 120 * 1000;  /* 120 secs */
+    public static long UPDATE_INTERVAL = 180 * 1000;  /* 180 secs */
 
-    public static long FASTEST_INTERVAL = 90* 1000; /* 90 sec */
+    public static long FASTEST_INTERVAL = 120* 1000; /* 120 sec */
 
     public static final int INTERVAL_MOVE_IN_MS = 5*60*1000;//5mins
 
