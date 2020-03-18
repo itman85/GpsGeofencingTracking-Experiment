@@ -142,14 +142,16 @@ public class LocationRequestUpdateForegroundService extends Service {
                             + ", Confidence: " + confidence + "/100");
                     FileLogs.writeLog(this,TAG,"I","Get Snapshot Activity: " + activityStr
                             + ", Confidence: " + confidence + "/100");
-                    //check if Fast move
-                    if((probableActivity.getType() == DetectedActivity.ON_BICYCLE ||
-                            probableActivity.getType() == DetectedActivity.IN_VEHICLE) &&
-                            confidence >= FAST_MOVE_CONFIDENCE) {
+                    //check if Fast move, don't care about confidence
+                    if(probableActivity.getType() == DetectedActivity.ON_BICYCLE ||
+                            probableActivity.getType() == DetectedActivity.IN_VEHICLE) {
                         SbLog.i(TAG,"User move fast,so keep tracking now");
                         FileLogs.writeLog(this,TAG,"I","User move fast,so keep tracking now");
                         FileLogs.writeLogByDate(this,TAG,"I","User move fast,so keep tracking now");
                     }else {
+                        SbLog.i(TAG,"User not move fast,so STOP tracking now");
+                        FileLogs.writeLog(this,TAG,"I","User NOT move fast,so STOP tracking now");
+                        FileLogs.writeLogByDate(this,TAG,"I","User NOT move fast,so STOP tracking now");
                         stopSelf();// stop tracking location now
                     }
                 })
