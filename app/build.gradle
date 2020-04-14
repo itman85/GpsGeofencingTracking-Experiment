@@ -38,6 +38,8 @@ dependencies {
 
     // Add the Firebase SDK for Crashlytics.
     implementation 'com.google.firebase:firebase-crashlytics:17.0.0-beta01'
+
+    implementation 'io.paperdb:paperdb:2.6'
 }
 
 apply plugin: 'com.google.gms.google-services'

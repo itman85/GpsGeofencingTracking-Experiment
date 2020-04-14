@@ -59,6 +59,8 @@ public class MainActivity extends AppCompatActivity {
             //
             //startActivity(new Intent(MainActivity.this,AwarenessActivity.class));
             //Toast.makeText(MainActivity.this,"This button disable processing",Toast.LENGTH_LONG).show();
+            TestUtils.testSavePaperValue();
+            TestUtils.testReadPaperValue();
         });
 
         Button registerBtn = findViewById(R.id.registerBtn);
