@@ -32,8 +32,8 @@ public class LocationUtils {
         float distance = getMetersFromLatLong(lastLat,lastLng, lat, lng);
         //seem not move
         if(distance <= STAY_DISTANCE_IN_MET){
-            SharedPreferencesHandler.setLastLatLocation(context, lat);
-            SharedPreferencesHandler.setLastLngLocation(context, lng);
+            //SharedPreferencesHandler.setLastLatLocation(context, lat);
+            //SharedPreferencesHandler.setLastLngLocation(context, lng);
             long lastStayMoment = SharedPreferencesHandler.getLastMomentGPSChange(context);
             //save first time moment of stay around
             if(!SharedPreferencesHandler.isFirstMomentStayAround(context)){

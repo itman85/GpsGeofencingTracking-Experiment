@@ -60,7 +60,7 @@ public class NotiHelper {
         return content.toLowerCase().contains(appName.toLowerCase());
     }
 
-    private static String getTextFromNotification(Bundle bundle, String key) {
+    public static String getTextFromNotification(Bundle bundle, String key) {
         if (bundle.containsKey(key)) {
             CharSequence textFromSequence = bundle.getCharSequence(key);
             if (textFromSequence != null) {

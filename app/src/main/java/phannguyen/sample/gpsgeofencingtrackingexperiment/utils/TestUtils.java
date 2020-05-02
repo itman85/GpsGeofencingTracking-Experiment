@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.paperdb.Paper;
 import phannguyen.sample.gpsgeofencingtrackingexperiment.helper.ServiceHelper;
 import phannguyen.sample.gpsgeofencingtrackingexperiment.models.GeoFencingPlaceModel;
 
@@ -68,5 +69,30 @@ public class TestUtils {
         geoList.add(new GeoFencingPlaceModel(10.777699, 106.681903,100,"VXoay_DanChu"));
 
         return geoList;
+    }
+
+    public static void testSavePaperValue(){
+        long s1 = System.currentTimeMillis();
+        Paper.book("TestBook").write("long_value",123456789);
+        long s2 = System.currentTimeMillis();
+        SbLog.i("Paper_Test","Time to save long value: "+(s2-s1));
+
+
+        s1 = System.currentTimeMillis();
+        Paper.book("TestBook").write("string_value","hello world, how are you?");
+        s2 = System.currentTimeMillis();
+        SbLog.i("Paper_Test","Time to save string value: "+(s2-s1));
+    }
+
+    public static void testReadPaperValue(){
+        long s1 = System.currentTimeMillis();
+        long value = Paper.book("TestBook").read("long_value",0);
+        long s2 = System.currentTimeMillis();
+        SbLog.i("Paper_Test","Time to read long value: "+(s2-s1));
+
+        s1 = System.currentTimeMillis();
+        String sValue = Paper.book("TestBook").read("string_value","default string");
+        s2 = System.currentTimeMillis();
+        SbLog.i("Paper_Test","Time to read string value: "+(s2-s1));
     }
 }

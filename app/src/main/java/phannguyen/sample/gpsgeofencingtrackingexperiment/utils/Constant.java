@@ -19,9 +19,9 @@ public class Constant {
 
     public static final String SIGNAL_KEY  = "signal";
 
-    public static long UPDATE_INTERVAL = 120 * 1000;  /* 120 secs */
+    public static long UPDATE_INTERVAL = 180 * 1000;  /* 180 secs */
 
-    public static long FASTEST_INTERVAL = 60* 1000; /* 60 sec */
+    public static long FASTEST_INTERVAL = 120* 1000; /* 120 sec */
 
     public static final int INTERVAL_MOVE_IN_MS = 5*60*1000;//5mins
 
@@ -47,11 +47,11 @@ public class Constant {
 
     public static long LONG_STAY_AROUND_TIME = 30*60*1000;  /* 30 MINS user stay and move around a place (house, workplace,...)*/
 
-    public static long SHORT_STAY_AROUND_TIME = 5*60*1000;  /* 5 MINS user stay and move around a place (house, workplace,...)*/
+    public static long SHORT_STAY_AROUND_TIME = 15*60*1000;  /* 15 MINS user stay and move around a place (house, workplace,...)*/
 
     public static final int STILL_CONFIDENCE = 80;
 
-    public static final int ONFOOT_CONFIDENCE = 90;
+    public static final int ONFOOT_CONFIDENCE = 80;
 
     public static final int FAST_MOVE_CONFIDENCE = 80;
 

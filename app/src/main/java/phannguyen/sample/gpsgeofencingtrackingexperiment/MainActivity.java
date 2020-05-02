@@ -59,6 +59,8 @@ public class MainActivity extends AppCompatActivity {
             //
             //startActivity(new Intent(MainActivity.this,AwarenessActivity.class));
             //Toast.makeText(MainActivity.this,"This button disable processing",Toast.LENGTH_LONG).show();
+            TestUtils.testSavePaperValue();
+            TestUtils.testReadPaperValue();
         });
 
         Button registerBtn = findViewById(R.id.registerBtn);
@@ -113,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
             permissionList.add(Manifest.permission.ACCESS_FINE_LOCATION);
-            permissionList.add(Manifest.permission.ACCESS_BACKGROUND_LOCATION);
+            permissionList.add(Manifest.permission.ACCESS_BACKGROUND_LOCATION); // this will for android 10 only, will add option "allow all time"
         }
 
         // require for android 10+

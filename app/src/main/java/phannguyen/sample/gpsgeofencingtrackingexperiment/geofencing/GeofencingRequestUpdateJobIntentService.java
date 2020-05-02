@@ -2,14 +2,13 @@ package phannguyen.sample.gpsgeofencingtrackingexperiment.geofencing;
 
 import android.Manifest;
 import android.app.PendingIntent;
-import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.os.IBinder;
-import android.util.Log;
 
-import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.JobIntentService;
 
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingClient;
@@ -28,19 +27,23 @@ import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.G
 import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.KEY_ADD_NEW_LIST;
 import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.KEY_REMOVE_LIST;
 
-public class GeofencingRequestUpdateService extends Service {
+public class GeofencingRequestUpdateJobIntentService extends JobIntentService {
+
+    private static final int JOB_ID = 574;
+
     private static final String TAG = "GeoFencingReqSv";
+
     private GeofencingClient geofencingClient;
     /**
      * Used when requesting to add or remove geofences.
      */
     private PendingIntent mGeofencePendingIntent;
 
-
-    @Nullable
-    @Override
-    public IBinder onBind(Intent intent) {
-        return null;
+    /**
+     * Convenience method for enqueuing work in to this service.
+     */
+    public static void enqueueWork(Context context, Intent intent) {
+        enqueueWork(context, GeofencingRequestUpdateJobIntentService.class, JOB_ID, intent);
     }
 
     @Override
@@ -49,11 +52,10 @@ public class GeofencingRequestUpdateService extends Service {
         SbLog.i(TAG, "Geo fencing request service created");
         FileLogs.writeLog(this,TAG,"I","Geo fencing request service created");
         geofencingClient = LocationServices.getGeofencingClient(this);
-
     }
 
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
+    protected void onHandleWork(@NonNull Intent intent) {
         if((intent==null) || (intent!=null && intent.hasExtra("action") && "START".equals(intent.getStringExtra("action")))) {
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 SbLog.e(TAG, "No permission for geo fencing");
@@ -95,7 +97,6 @@ public class GeofencingRequestUpdateService extends Service {
             FileLogs.writeLog(this,TAG,"I","***Geo fencing request remove...");
             stopGeofencingMonitoring();
         }
-        return START_STICKY;
     }
 
     @Override
@@ -207,5 +208,4 @@ public class GeofencingRequestUpdateService extends Service {
         }
         return geofencesList;
     }
-
 }

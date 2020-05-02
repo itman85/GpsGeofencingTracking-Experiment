@@ -143,7 +143,7 @@ public class LocationRequestUpdateBackgroundService extends Service {
         SbLog.i(TAG," Location Request Update Service Destroy");
         FileLogs.writeLog(this,TAG,"I","*** Location Request Update Service Destroy @"+TestUtils.getBatteryCapacity(this));
         FileLogs.writeLogByDate(this,TAG,"I","*** Location Request Update Service Destroy");
-        SharedPreferencesHandler.setLocationRequestUpdateStatus(this, false);
+        //SharedPreferencesHandler.setLocationRequestUpdateStatus(this, false);
         removeLocationRequestUpdate();
     }
 
