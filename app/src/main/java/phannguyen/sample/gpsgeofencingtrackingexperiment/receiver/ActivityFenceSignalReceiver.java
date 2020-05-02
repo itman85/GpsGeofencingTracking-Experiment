@@ -14,6 +14,7 @@ import java.util.Map;
 
 import phannguyen.sample.gpsgeofencingtrackingexperiment.helper.ServiceHelper;
 import phannguyen.sample.gpsgeofencingtrackingexperiment.helper.WorkManagerHelper;
+import phannguyen.sample.gpsgeofencingtrackingexperiment.service.StepsDetectorService;
 import phannguyen.sample.gpsgeofencingtrackingexperiment.utils.FileLogs;
 import phannguyen.sample.gpsgeofencingtrackingexperiment.utils.SbLog;
 
@@ -43,6 +44,7 @@ public class ActivityFenceSignalReceiver extends BroadcastReceiver {
         if (TextUtils.equals(fenceState.getFenceKey(), FAST_ACTIVITY_FENCE_KEY)) {
             switch (fenceState.getCurrentState()) {
                 case FenceState.TRUE:
+                    StepsDetectorService.cancelStepDetectorService();
                     SbLog.i(TAG,"User Move Fast in Vehicle");
                     FileLogs.writeLog(context, TAG, "I", "User Move Fast in Vehicle");
                     FileLogs.writeLogByDate(context, TAG, "I", "User Move Fast in Vehicle");
@@ -63,7 +65,8 @@ public class ActivityFenceSignalReceiver extends BroadcastReceiver {
                     FileLogs.writeLog(context, TAG, "I", "User Move Slow On Foot");
                     FileLogs.writeLogByDate(context, TAG, "I", "User Move Slow On Foot");
                     // user move slow on foot, so let check after delay time
-                    WorkManagerHelper.startActivityTriggerWorkerOnetimeRequest(context,INTERVAL_WALK_IN_MS/1000, ExistingWorkPolicy.REPLACE.ordinal());
+                   // WorkManagerHelper.startActivityTriggerWorkerOnetimeRequest(context,INTERVAL_WALK_IN_MS/1000, ExistingWorkPolicy.REPLACE.ordinal());
+                    ServiceHelper.startStepsDetectorJobService(context,null);
                     break;
                 default:
                     SbLog.i(TAG,"User Move Slow Unknown");
@@ -73,6 +76,7 @@ public class ActivityFenceSignalReceiver extends BroadcastReceiver {
         }else if(TextUtils.equals(fenceState.getFenceKey(), NOT_MOVE_ACTIVITY_FENCE_KEY)){
             switch (fenceState.getCurrentState()) {
                 case FenceState.TRUE:
+                    StepsDetectorService.cancelStepDetectorService();
                     SbLog.i(TAG,"User Still");
                     FileLogs.writeLog(context, TAG, "I", "User Still");
                     FileLogs.writeLogByDate(context, TAG, "I", "User Still");

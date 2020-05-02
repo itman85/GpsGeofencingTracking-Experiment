@@ -15,6 +15,7 @@ import phannguyen.sample.gpsgeofencingtrackingexperiment.service.CoreDetectActiv
 import phannguyen.sample.gpsgeofencingtrackingexperiment.service.CoreTrackingJobService;
 import phannguyen.sample.gpsgeofencingtrackingexperiment.service.LocationRequestUpdateBackgroundService;
 import phannguyen.sample.gpsgeofencingtrackingexperiment.service.LocationRequestUpdateForegroundService;
+import phannguyen.sample.gpsgeofencingtrackingexperiment.service.StepsDetectorService;
 
 public class ServiceHelper {
 
@@ -166,5 +167,22 @@ public class ServiceHelper {
             //ContextCompat.startForegroundService(context, serviceIntent);
             context.startService(serviceIntent);
         }
+    }
+
+    public static void startStepsDetectorJobService(Context context, Map<String, Object> bundle){
+        Intent serviceIntent = new Intent(context, StepsDetectorService.class);
+        if(bundle!=null) {
+            for (String key : bundle.keySet()) {
+                if(bundle.get(key) instanceof String)
+                    serviceIntent.putExtra(key,(String)bundle.get(key));
+                else if(bundle.get(key) instanceof Boolean)
+                    serviceIntent.putExtra(key,(Boolean) bundle.get(key));
+                else if(bundle.get(key) instanceof Integer)
+                    serviceIntent.putExtra(key,(Integer) bundle.get(key));
+                else if(bundle.get(key) instanceof Location)
+                    serviceIntent.putExtra(key,(Location)bundle.get(key));
+            }
+        }
+        StepsDetectorService.enqueueWork(context,serviceIntent);
     }
 }
