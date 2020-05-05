@@ -9,10 +9,12 @@ import android.app.Service;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Build;
+import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 
 import com.google.android.gms.awareness.Awareness;
@@ -37,6 +39,8 @@ import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.D
 import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.ERROR_TAG;
 import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.FASTEST_INTERVAL;
 import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.FAST_MOVE_CONFIDENCE;
+import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.TEST_FASTEST_INTERVAL;
+import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.TEST_UPDATE_INTERVAL;
 import static phannguyen.sample.gpsgeofencingtrackingexperiment.utils.Constant.UPDATE_INTERVAL;
 
 /**
@@ -70,8 +74,8 @@ public class LocationRequestUpdateForegroundService extends Service {
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         mLocationRequest = new LocationRequest();
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);// less drain battery
-        mLocationRequest.setInterval(UPDATE_INTERVAL);
-        mLocationRequest.setFastestInterval(FASTEST_INTERVAL);
+        mLocationRequest.setInterval(TEST_UPDATE_INTERVAL);
+        mLocationRequest.setFastestInterval(TEST_FASTEST_INTERVAL);
         mLocationCallback = new LocationCallback() {
             @Override
             public void onLocationResult(LocationResult locationResult) {
@@ -114,9 +118,21 @@ public class LocationRequestUpdateForegroundService extends Service {
         mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, mWorkerThread.getLooper());
         //stopSelf();
         handleRestartService(intent);
+        //stopForegroundNotification();
         return START_STICKY;// re-create service (with null intent) if it get killed by OS
     }
 
+    private void stopForegroundNotification(){
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
+            @Override
+            public void run() {
+                stopForeground(STOP_FOREGROUND_DETACH);
+
+            }
+        }, 1000);
+    }
     // In case this service get killed by system, and it restart as system's schedule. so need to check activity state before request update location
     private void handleRestartService(Intent intent){
         // Because service start_sticky, so when it restart will come with null intent
